@@ -37,6 +37,12 @@
     </PreferenceScreen>
 
     <CheckBoxPreference
+        android:key="@string/disable_link_pref_key"
+        android:title="@string/disable_link_pref_title"
+        android:defaultValue="@bool/disable_link_pref_default"
+        android:persistent="true" />
+
+    <CheckBoxPreference
         android:key="@string/send_sound_pref_key"
         android:title="@string/send_sound_pref_title"
         android:defaultValue="@bool/send_sound_pref_default"

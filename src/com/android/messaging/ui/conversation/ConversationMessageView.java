@@ -41,6 +41,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.messaging.Factory;
 import com.android.messaging.R;
 import com.android.messaging.datamodel.DataModel;
 import com.android.messaging.datamodel.data.ConversationMessageData;
@@ -64,6 +65,7 @@ import com.android.messaging.ui.VideoThumbnailView;
 import com.android.messaging.util.AccessibilityUtil;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.AvatarUriUtil;
+import com.android.messaging.util.BuglePrefs;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.ImageUtils;
 import com.android.messaging.util.OsUtil;
@@ -647,13 +649,23 @@ public class ConversationMessageView extends FrameLayout implements View.OnClick
         }
     }
 
+    private boolean areLinksDisabled() {
+        final BuglePrefs prefs = BuglePrefs.getApplicationPrefs();
+        final Context context = Factory.get().getApplicationContext();
+        final String prefKey = context.getString(R.string.disable_link_pref_key);
+        final boolean defaultValue = context.getResources().getBoolean(
+                R.bool.disable_link_pref_default);
+        return prefs.getBoolean(prefKey, defaultValue);
+    }
+
     private void updateMessageText() {
         final String text = mData.getText();
         if (!TextUtils.isEmpty(text)) {
             mMessageTextView.setText(text);
             // Linkify phone numbers, web urls, emails, and map addresses to allow users to
             // click on them and take the default intent.
-            mMessageTextHasLinks = Linkify.addLinks(mMessageTextView, Linkify.ALL);
+            mMessageTextHasLinks = areLinksDisabled() ? false :
+                    Linkify.addLinks(mMessageTextView, Linkify.ALL);
             mMessageTextView.setVisibility(View.VISIBLE);
         } else {
             mMessageTextView.setVisibility(View.GONE);

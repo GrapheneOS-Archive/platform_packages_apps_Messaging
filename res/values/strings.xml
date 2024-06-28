@@ -470,6 +470,8 @@
     <string name="unknown_phone_number_pref_display_value">Unknown</string>
     <!-- Title for the preference for playing a message send sound -->
     <string name="send_sound_pref_title">Outgoing message sounds</string>
+    <!-- TItle for the preference to disable links in messages -->
+    <string name="disable_link_pref_title">Disable links in messages</string>
 
     <string name="dump_sms_pref_title">Dump SMS</string>
     <string name="dump_sms_pref_summary">Dump received SMS raw data into external storage file</string>
