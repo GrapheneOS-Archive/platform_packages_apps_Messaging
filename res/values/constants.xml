@@ -31,6 +31,8 @@
     <string name="send_sound_pref_key" translatable="false">send_sound</string>
     <bool name="send_sound_pref_default" translatable="false">true</bool>
     <string name="advanced_pref_key" translatable="false">advanced_prefs</string>
+    <string name="disable_link_pref_key" translatable="false">disable_link</string>
+    <bool name="disable_link_pref_default" translatable="false">false</bool>
 
     <!-- Subscription-specific settings. The values of these pref keys must be prefixed with
          "buglesub_" to allow for runtime checks -->
