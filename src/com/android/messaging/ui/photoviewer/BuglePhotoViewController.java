@@ -23,12 +23,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.content.Loader;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.android.ex.photo.PhotoViewController;
@@ -133,7 +135,7 @@ public class BuglePhotoViewController extends PhotoViewController {
 
         // Get the ShareActionProvider
         mShareItem = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider) mShareItem.getActionProvider();
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mShareItem);
         updateShareActionProvider();
 
         mSaveItem = menu.findItem(R.id.action_save);
