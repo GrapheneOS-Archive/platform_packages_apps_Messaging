@@ -181,6 +181,7 @@
 
         <activity
             android:name=".ui.appsettings.ApplicationSettingsActivity"
+            android:exported="true"
             android:label="@string/general_settings_activity_title"
             android:theme="@style/BugleTheme.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
