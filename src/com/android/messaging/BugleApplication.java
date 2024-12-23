@@ -41,6 +41,7 @@ import com.android.messaging.util.BuglePrefs;
 import com.android.messaging.util.BuglePrefsKeys;
 import com.android.messaging.util.DebugUtils;
 import com.android.messaging.util.LogUtil;
+import com.android.messaging.util.NotificationChannelUtil;
 import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.Trace;
@@ -85,6 +86,9 @@ public class BugleApplication extends Application implements UncaughtExceptionHa
 
         sSystemUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
+
+        NotificationChannelUtil.INSTANCE.onCreate(this);
+
         Trace.endSection();
     }
 

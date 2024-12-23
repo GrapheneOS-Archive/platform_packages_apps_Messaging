@@ -55,6 +55,7 @@ import com.android.messaging.util.BugleGservicesKeys;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.ConversationIdSet;
 import com.android.messaging.util.LogUtil;
+import com.android.messaging.util.NotificationChannelUtil;
 import com.android.messaging.util.PendingIntentConstants;
 import com.android.messaging.util.UriUtil;
 import com.google.common.collect.Lists;
@@ -789,7 +790,7 @@ public abstract class MessageNotificationState extends NotificationState {
             bigText.append("\n\n").append(statusText);
         }
 
-        final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context);
+        final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, NotificationChannelUtil.CONVERSATIONS);
         final NotificationCompat.Style notifStyle =
                 new NotificationCompat.BigTextStyle(notifBuilder).bigText(bigText);
         notifBuilder.setStyle(notifStyle);

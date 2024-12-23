@@ -35,6 +35,7 @@ import android.provider.ContactsContract.Contacts;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.WearableExtender;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.Person;
 import androidx.core.app.RemoteInput;
 import androidx.collection.SimpleArrayMap;
 import android.text.Spannable;
@@ -73,6 +74,7 @@ import com.android.messaging.util.ContentType;
 import com.android.messaging.util.ConversationIdSet;
 import com.android.messaging.util.ImageUtils;
 import com.android.messaging.util.LogUtil;
+import com.android.messaging.util.NotificationChannelUtil;
 import com.android.messaging.util.NotificationPlayer;
 import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PendingIntentConstants;
@@ -411,7 +413,8 @@ public class BugleNotifications {
     private static void processAndSend(final NotificationState state, final boolean silent,
             final boolean softSound) {
         final Context context = Factory.get().getApplicationContext();
-        final NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context);
+        final NotificationCompat.Builder notifBuilder =
+                new NotificationCompat.Builder(context, NotificationChannelUtil.CONVERSATIONS);
         notifBuilder.setCategory(Notification.CATEGORY_MESSAGE);
         // TODO: Need to fix this for multi conversation notifications to rate limit dings.
         final String conversationId = state.mConversationIds.first();
@@ -818,7 +821,7 @@ public class BugleNotifications {
 
                 // Add a wearable page with no visible card so you can more easily see the photo.
                 final NotificationCompat.Builder photoPageNotifBuilder =
-                        new NotificationCompat.Builder(Factory.get().getApplicationContext());
+                        new NotificationCompat.Builder(Factory.get().getApplicationContext(), NotificationChannelUtil.CONVERSATIONS);
                 final WearableExtender photoPageWearableExtender = new WearableExtender();
                 photoPageWearableExtender.setHintShowBackgroundOnly(true);
                 if (attachmentBitmap != null) {
@@ -1202,7 +1205,8 @@ public class BugleNotifications {
         final PendingIntent destinationIntent = UIIntents.get()
                 .getPendingIntentForConversationActivity(context, conversationId, null /* draft */);
 
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        final NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, NotificationChannelUtil.ALERTS);
         builder.setTicker(line1)
                 .setContentTitle(line1)
                 .setContentText(line2)
