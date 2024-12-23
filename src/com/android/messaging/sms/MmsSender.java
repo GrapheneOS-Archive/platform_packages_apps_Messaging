@@ -163,7 +163,7 @@ public class MmsSender {
                 context,
                 0 /*request code*/,
                 sentIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // Send the message
         MmsManager.sendMultimediaMessage(subId, context, contentUri, locationUrl,
@@ -262,7 +262,7 @@ public class MmsSender {
                 context,
                 0 /*request code*/,
                 downloadedIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         MmsManager.downloadMultimediaMessage(subId, context, contentLocation, contentUri,
                 downloadedPendingIntent);
