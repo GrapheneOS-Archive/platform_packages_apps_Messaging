@@ -150,23 +150,18 @@ public class BuglePhotoViewController extends PhotoViewController {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
-            if (OsUtil.hasStoragePermission()) {
-                final PhotoPagerAdapter adapter = getAdapter();
-                final Cursor cursor = getCursorAtProperPosition();
-                if (cursor == null) {
-                    final Context context = getActivity().getContext();
-                    final String error = context.getResources().getQuantityString(
-                            R.plurals.attachment_save_error, 1, 1);
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                final String photoUri = adapter.getPhotoUri(cursor);
-                new ConversationFragment.SaveAttachmentTask(((Activity) getActivity()),
-                        Uri.parse(photoUri), adapter.getContentType(cursor)).executeOnThreadPool();
-            } else {
-                ((Activity)getActivity()).requestPermissions(
-                        new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+            final PhotoPagerAdapter adapter = getAdapter();
+            final Cursor cursor = getCursorAtProperPosition();
+            if (cursor == null) {
+                final Context context = getActivity().getContext();
+                final String error = context.getResources().getQuantityString(
+                        R.plurals.attachment_save_error, 1, 1);
+                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                return true;
             }
+            final String photoUri = adapter.getPhotoUri(cursor);
+            new ConversationFragment.SaveAttachmentTask(((Activity) getActivity()),
+                    Uri.parse(photoUri), adapter.getContentType(cursor)).executeOnThreadPool();
             return true;
         } else {
             return super.onOptionsItemSelected(item);

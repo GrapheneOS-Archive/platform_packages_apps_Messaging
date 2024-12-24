@@ -310,21 +310,14 @@ public class ConversationFragment extends Fragment implements ConversationDataLi
             final String messageId = data.getMessageId();
             int itemId = menuItem.getItemId();
             if (itemId == R.id.save_attachment) {
-                if (OsUtil.hasStoragePermission()) {
-                    final SaveAttachmentTask saveAttachmentTask = new SaveAttachmentTask(
-                        getActivity());
-                    for (final MessagePartData part : data.getAttachments()) {
-                        saveAttachmentTask.addAttachmentToSave(part.getContentUri(),
-                            part.getContentType());
-                    }
-                    if (saveAttachmentTask.getAttachmentCount() > 0) {
-                        saveAttachmentTask.executeOnThreadPool();
-                        mHost.dismissActionMode();
-                    }
+                final SaveAttachmentTask saveAttachmentTask = new SaveAttachmentTask(getActivity());
+                for (final MessagePartData part : data.getAttachments()) {
+                    saveAttachmentTask.addAttachmentToSave(part.getContentUri(),
+                        part.getContentType());
                 }
-                else {
-                    getActivity().requestPermissions(
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                if (saveAttachmentTask.getAttachmentCount() > 0) {
+                    saveAttachmentTask.executeOnThreadPool();
+                    mHost.dismissActionMode();
                 }
                 return true;
             }

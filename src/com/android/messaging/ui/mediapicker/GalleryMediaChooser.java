@@ -81,7 +81,7 @@ class GalleryMediaChooser extends MediaChooser implements
         mGalleryGridView.setAdapter(null);
         mAdapter.setHostInterface(null);
         // The loader is started only if startMediaPickerDataLoader() is called
-        if (OsUtil.hasStoragePermission()) {
+        if (hasStoragePermissions()) {
             mBindingRef.getData().destroyLoader(MediaPickerData.GALLERY_MEDIA_LOADER);
         }
         return super.destroyView();
@@ -149,12 +149,12 @@ class GalleryMediaChooser extends MediaChooser implements
         mGalleryGridView.setAdapter(mAdapter);
         mGalleryGridView.setHostInterface(this);
         mGalleryGridView.setDraftMessageDataModel(mMediaPicker.getDraftMessageDataModel());
-        if (OsUtil.hasStoragePermission()) {
+        if (hasStoragePermissions()) {
             startMediaPickerDataLoader();
         }
 
         mMissingPermissionView = view.findViewById(R.id.missing_permission_view);
-        updateForPermissionState(OsUtil.hasStoragePermission());
+        updateForPermissionState(hasStoragePermissions());
         return view;
     }
 
@@ -204,7 +204,7 @@ class GalleryMediaChooser extends MediaChooser implements
 
     @Override
     public void onResume() {
-        if (OsUtil.hasStoragePermission()) {
+        if (hasStoragePermissions()) {
             // Work around a bug in MediaStore where cursors querying the Files provider don't get
             // updated for changes to Images.Media or Video.Media.
             startMediaPickerDataLoader();
@@ -214,9 +214,9 @@ class GalleryMediaChooser extends MediaChooser implements
     @Override
     protected void setSelected(final boolean selected) {
         super.setSelected(selected);
-        if (selected && !OsUtil.hasStoragePermission()) {
+        if (selected && !hasStoragePermissions()) {
             mMediaPicker.requestPermissions(
-                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                    new String[] { Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO },
                     MediaPicker.GALLERY_PERMISSION_REQUEST_CODE);
         }
     }
@@ -256,5 +256,9 @@ class GalleryMediaChooser extends MediaChooser implements
                 && resultCode == Activity.RESULT_OK) {
             mDocumentImagePicker.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private boolean hasStoragePermissions() {
+        return OsUtil.hasReadImagesPermission() || OsUtil.hasReadVideoPermission() || OsUtil.hasReadAudioPermission();
     }
 }
