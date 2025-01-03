@@ -148,8 +148,7 @@ public class ApplicationSettingsActivity extends BugleActionBarActivity {
                 getPreferenceScreen().removePreference(advancedScreen);
             }
 
-            final PreferenceScreen smsDisabled = (PreferenceScreen) findPreference(
-                    getContext().getString(R.string.sms_disabled_pref_key));
+            final PreferenceScreen smsDisabled = (PreferenceScreen) findPreference(mSmsDisabledPrefKey);
             smsDisabled.setOnPreferenceClickListener(preference -> {
                 RoleManager roleManager = getContext().getSystemService(RoleManager.class);
                 Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
@@ -157,8 +156,7 @@ public class ApplicationSettingsActivity extends BugleActionBarActivity {
                 return false;
             });
 
-            final PreferenceScreen smsEnabled = (PreferenceScreen) findPreference(
-                    getContext().getString(R.string.sms_enabled_pref_key));
+            final PreferenceScreen smsEnabled = (PreferenceScreen) findPreference(mSmsEnabledPrefKey);
             smsEnabled.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
