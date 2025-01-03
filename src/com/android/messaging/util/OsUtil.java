@@ -17,6 +17,7 @@
 package com.android.messaging.util;
 
 import android.Manifest;
+import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.UserManager;
@@ -157,7 +158,12 @@ public class OsUtil {
 
     /** Does the app have the minimum set of permissions required to operate. */
     public static boolean hasRequiredPermissions() {
-        return hasPermissions(sRequiredPermissions);
+        if (!hasPermissions(sRequiredPermissions)) {
+            return false;
+        }
+        Context ctx = Factory.get().getApplicationContext();
+        var roleManager = ctx.getSystemService(RoleManager.class);
+        return roleManager.isRoleHeld(RoleManager.ROLE_SMS);
     }
 
     public static String[] getMissingRequiredPermissions() {

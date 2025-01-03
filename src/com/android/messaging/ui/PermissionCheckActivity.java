@@ -17,6 +17,7 @@
 package com.android.messaging.ui;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -90,6 +91,13 @@ public class PermissionCheckActivity extends Activity {
     }
 
     private void tryRequestPermission() {
+        var roleManager = getSystemService(RoleManager.class);
+        if (!roleManager.isRoleHeld(RoleManager.ROLE_SMS)) {
+            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+            startActivityForResult(intent, 0);
+            return;
+        }
+
         final String[] missingPermissions = OsUtil.getMissingRequiredPermissions();
         if (missingPermissions.length == 0) {
             redirect();
