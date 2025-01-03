@@ -17,6 +17,7 @@
 package com.android.messaging.ui.appsettings;
 
 import android.app.FragmentTransaction;
+import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -146,6 +147,24 @@ public class ApplicationSettingsActivity extends BugleActionBarActivity {
                 // the parent SettingsActivity.
                 getPreferenceScreen().removePreference(advancedScreen);
             }
+
+            final PreferenceScreen smsDisabled = (PreferenceScreen) findPreference(
+                    getContext().getString(R.string.sms_disabled_pref_key));
+            smsDisabled.setOnPreferenceClickListener(preference -> {
+                RoleManager roleManager = getContext().getSystemService(RoleManager.class);
+                Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+                startActivityForResult(intent, 0);
+                return false;
+            });
+
+            final PreferenceScreen smsEnabled = (PreferenceScreen) findPreference(
+                    getContext().getString(R.string.sms_enabled_pref_key));
+            smsEnabled.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return false;
+            });
         }
 
         @Override
