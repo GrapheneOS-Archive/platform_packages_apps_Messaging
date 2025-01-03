@@ -15,17 +15,16 @@
     limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_share"
         android:title="@string/action_share"
-        android:actionProviderClass="android.widget.ShareActionProvider"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_save"
         android:title="@string/save"
         android:icon="@drawable/ic_save_light"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
 </menu>

@@ -16,19 +16,17 @@
 
 package com.android.messaging.ui.photoviewer;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.core.view.MenuItemCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.loader.content.Loader;
+import android.provider.BaseColumns;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -42,13 +40,17 @@ import com.android.messaging.datamodel.MediaScratchFileProvider;
 import com.android.messaging.ui.conversation.ConversationFragment;
 import com.android.messaging.util.Dates;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.content.Loader;
 
 /**
  * Customizations for the photoviewer to display conversation images in full screen.
  */
 public class BuglePhotoViewController extends PhotoViewController {
-    private ShareActionProvider mShareActionProvider;
+    private static final String TAG = "BuglePhotoViewController";
+
     private MenuItem mShareItem;
     private MenuItem mSaveItem;
 
@@ -93,30 +95,17 @@ public class BuglePhotoViewController extends PhotoViewController {
         setActionBarTitles(getActivity().getActionBarInterface());
         mSaveItem.setVisible(!isTempFile());
 
-        updateShareActionProvider();
+        updateShareItem();
     }
 
-    private void updateShareActionProvider() {
+    private void updateShareItem() {
         final PhotoPagerAdapter adapter = getAdapter();
         final Cursor cursor = getCursorAtProperPosition();
-        if (mShareActionProvider == null || mShareItem == null || adapter == null ||
-                cursor == null) {
+        if (mShareItem == null || adapter == null || cursor == null) {
             // Not enough stuff loaded to update the share action
             return;
         }
-        final String photoUri = adapter.getPhotoUri(cursor);
-        if (isTempFile()) {
-            mShareItem.setVisible(false);
-            return;
-        }
-        final String contentType = adapter.getContentType(cursor);
-
-        final Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setType(contentType);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(photoUri));
-        mShareActionProvider.setShareIntent(shareIntent);
-        mShareItem.setVisible(true);
+        mShareItem.setVisible(!isTempFile());
     }
 
     /**
@@ -133,10 +122,8 @@ public class BuglePhotoViewController extends PhotoViewController {
     public boolean onCreateOptionsMenu(final Menu menu) {
         ((Activity) getActivity()).getMenuInflater().inflate(R.menu.photo_view_menu, menu);
 
-        // Get the ShareActionProvider
         mShareItem = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mShareItem);
-        updateShareActionProvider();
+        updateShareItem();
 
         mSaveItem = menu.findItem(R.id.action_save);
         return true;
@@ -149,7 +136,8 @@ public class BuglePhotoViewController extends PhotoViewController {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == R.id.action_save) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_save) {
             final PhotoPagerAdapter adapter = getAdapter();
             final Cursor cursor = getCursorAtProperPosition();
             if (cursor == null) {
@@ -163,8 +151,52 @@ public class BuglePhotoViewController extends PhotoViewController {
             new ConversationFragment.SaveAttachmentTask(((Activity) getActivity()),
                     Uri.parse(photoUri), adapter.getContentType(cursor)).executeOnThreadPool();
             return true;
+        } else if (itemId == R.id.action_share) {
+            handleShare();
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void handleShare() {
+        PhotoPagerAdapter adapter = getAdapter();
+        Cursor cursor = getCursorAtProperPosition();
+        String photoUri = adapter.getPhotoUri(cursor);
+        String contentType = adapter.getContentType(cursor);
+
+        Uri uri = Uri.parse(photoUri);
+        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            Uri contentUri = fileUriToContentUri(getActivity().getContext(), uri);
+            if (contentUri == null) {
+                Log.e(TAG, "fileUriToContentUri failed for " + uri);
+                return;
+            }
+            Log.d(TAG, "converted " + uri + " to " + contentUri);
+            uri = contentUri;
+        }
+        var intent = new Intent(Intent.ACTION_SEND);
+        intent.setType(contentType);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ((Activity) getActivity()).startActivity(Intent.createChooser(intent, null));
+    }
+
+    @Nullable
+    private static Uri fileUriToContentUri(Context context, Uri uri) {
+        String path = uri.getPath();
+        ContentResolver resolver = context.getContentResolver();
+        String[] projection = { BaseColumns._ID };
+        String selection = MediaStore.MediaColumns.DATA + "=?";
+        String[] selectionArgs = { path };
+        String volume = MediaStore.VOLUME_EXTERNAL;
+        Uri volumeUri = MediaStore.Files.getContentUri(volume);
+        try (Cursor c = resolver.query(volumeUri, projection, selection, selectionArgs, null)) {
+            if (c == null || !c.moveToFirst()) {
+                return null;
+            }
+            long id = c.getLong(0);
+            return MediaStore.Files.getContentUri(volume, id);
         }
     }
 
