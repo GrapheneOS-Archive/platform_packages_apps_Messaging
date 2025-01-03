@@ -93,9 +93,8 @@
     <dimen name="multiple_attachment_preview_padding">1dp</dimen>
     <dimen name="attachment_preview_more_items_text_size">22sp</dimen>
 
-    <item name="letter_to_tile_ratio" type="dimen">67%</item>
-    <item name="sim_identifier_to_tile_ratio" type="dimen">28%</item>
-    <item name="small_sim_identifier_to_tile_ratio" type="dimen">75%</item>
+    <item name="letter_to_tile_ratio" type="fraction">67%</item>
+    <item name="sim_identifier_to_tile_ratio" type="fraction">28%</item>
 
     <dimen name="audio_picker_text_size">16sp</dimen>
     <dimen name="audio_attachment_text_size">14sp</dimen>

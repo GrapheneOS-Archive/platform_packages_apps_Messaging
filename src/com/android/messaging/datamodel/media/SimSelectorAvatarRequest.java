@@ -95,7 +95,7 @@ public class SimSelectorAvatarRequest extends AvatarRequest {
             paint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
             paint.setColor(textColor);
             final float letterToTileRatio =
-                    resources.getFraction(R.dimen.sim_identifier_to_tile_ratio, 1, 1);
+                    resources.getFraction(R.fraction.sim_identifier_to_tile_ratio, 1, 1);
             paint.setTextSize(letterToTileRatio * minOfWidthAndHeight);
 
             final String firstCharString = identifier.substring(0, 1).toUpperCase();

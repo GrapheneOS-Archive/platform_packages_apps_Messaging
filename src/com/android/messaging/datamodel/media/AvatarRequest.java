@@ -163,7 +163,7 @@ public class AvatarRequest extends UriImageRequest<AvatarRequestDescriptor> {
         final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         paint.setColor(resources.getColor(R.color.letter_tile_font_color));
-        final float letterToTileRatio = resources.getFraction(R.dimen.letter_to_tile_ratio, 1, 1);
+        final float letterToTileRatio = resources.getFraction(R.fraction.letter_to_tile_ratio, 1, 1);
         paint.setTextSize(letterToTileRatio * minOfWidthAndHeight);
 
         final String firstCharString = name.substring(0, 1).toUpperCase();
