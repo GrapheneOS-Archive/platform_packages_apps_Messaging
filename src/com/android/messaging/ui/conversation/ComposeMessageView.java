@@ -190,8 +190,8 @@ public class ComposeMessageView extends LinearLayout
 
     @Override
     protected void onFinishInflate() {
-        mComposeEditText = (PlainTextEditText) findViewById(
-                R.id.compose_message_text);
+        super.onFinishInflate();
+        mComposeEditText = findViewById(R.id.compose_message_text);
         mComposeEditText.setOnEditorActionListener(this);
         mComposeEditText.addTextChangedListener(this);
         mComposeEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
