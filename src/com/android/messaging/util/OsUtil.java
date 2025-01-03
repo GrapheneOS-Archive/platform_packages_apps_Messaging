@@ -19,10 +19,7 @@ package com.android.messaging.util;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.UserHandle;
 import android.os.UserManager;
-import androidx.core.os.BuildCompat;
 
 import com.android.messaging.Factory;
 
@@ -34,126 +31,13 @@ import java.util.Set;
  * Android OS version utilities
  */
 public class OsUtil {
-    private static boolean sIsAtLeastICS_MR1;
-    private static boolean sIsAtLeastJB;
-    private static boolean sIsAtLeastJB_MR1;
-    private static boolean sIsAtLeastJB_MR2;
-    private static boolean sIsAtLeastKLP;
-    private static boolean sIsAtLeastL;
-    private static boolean sIsAtLeastL_MR1;
-    private static boolean sIsAtLeastM;
-    private static boolean sIsAtLeastN;
-
     private static Boolean sIsSecondaryUser = null;
-
-    static {
-        final int v = getApiVersion();
-        sIsAtLeastICS_MR1 = v >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
-        sIsAtLeastJB = v >= android.os.Build.VERSION_CODES.JELLY_BEAN;
-        sIsAtLeastJB_MR1 = v >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-        sIsAtLeastJB_MR2 = v >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
-        sIsAtLeastKLP = v >= android.os.Build.VERSION_CODES.KITKAT;
-        sIsAtLeastL = v >= android.os.Build.VERSION_CODES.LOLLIPOP;
-        sIsAtLeastL_MR1 = v >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
-        sIsAtLeastM = v >= android.os.Build.VERSION_CODES.M;
-        sIsAtLeastN = BuildCompat.isAtLeastN();
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least Ice Cream Sandwich
-     *  MR1 (API level 15).
-     */
-    public static boolean isAtLeastICS_MR1() {
-        return sIsAtLeastICS_MR1;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least Jelly Bean
-     *  (API level 16).
-     */
-    public static boolean isAtLeastJB() {
-        return sIsAtLeastJB;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least Jelly Bean MR1
-     *  (API level 17).
-     */
-    public static boolean isAtLeastJB_MR1() {
-        return sIsAtLeastJB_MR1;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least Jelly Bean MR2
-     *  (API level 18).
-     */
-    public static boolean isAtLeastJB_MR2() {
-        return sIsAtLeastJB_MR2;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least KLP
-     *  (API level 19).
-     */
-    public static boolean isAtLeastKLP() {
-        return sIsAtLeastKLP;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least L
-     *  (API level 21).
-     */
-    public static boolean isAtLeastL() {
-        return sIsAtLeastL;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least L MR1
-     *  (API level 22).
-     */
-    public static boolean isAtLeastL_MR1() {
-        return sIsAtLeastL_MR1;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least M
-     *  (API level 23).
-     */
-    public static boolean isAtLeastM() {
-        return sIsAtLeastM;
-    }
-
-    /**
-     * @return True if the version of Android that we're running on is at least N
-     *  (API level 24).
-     */
-    public static boolean isAtLeastN() {
-        return sIsAtLeastN;
-    }
-
-    /**
-     * @return The Android API version of the OS that we're currently running on.
-     */
-    public static int getApiVersion() {
-        return android.os.Build.VERSION.SDK_INT;
-    }
 
     public static boolean isSecondaryUser() {
         if (sIsSecondaryUser == null) {
             final Context context = Factory.get().getApplicationContext();
-            boolean isSecondaryUser = false;
-
-            // Only check for newer devices (but not the nexus 10)
-            if (OsUtil.sIsAtLeastJB_MR1 && !"Nexus 10".equals(Build.MODEL)) {
-                final UserHandle uh = android.os.Process.myUserHandle();
-                final UserManager userManager =
-                        (UserManager) context.getSystemService(Context.USER_SERVICE);
-                if (userManager != null) {
-                    final long userSerialNumber = userManager.getSerialNumberForUser(uh);
-                    isSecondaryUser = (0 != userSerialNumber);
-                }
-            }
-            sIsSecondaryUser = isSecondaryUser;
+            var userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+            sIsSecondaryUser = !userManager.isSystemUser();
         }
         return sIsSecondaryUser;
     }
@@ -192,20 +76,16 @@ public class OsUtil {
      * @param permission A permission from {@link android.Manifest.permission}
      */
     public static boolean hasPermission(final String permission) {
-        if (OsUtil.isAtLeastM()) {
-            // It is safe to cache the PERMISSION_GRANTED result as the process gets killed if the
-            // user revokes the permission setting. However, PERMISSION_DENIED should not be
-            // cached as the process does not get killed if the user enables the permission setting.
-            if (!sPermissions.containsKey(permission)
-                    || sPermissions.get(permission) == PackageManager.PERMISSION_DENIED) {
-                final Context context = Factory.get().getApplicationContext();
-                final int permissionState = context.checkSelfPermission(permission);
-                sPermissions.put(permission, permissionState);
-            }
-            return sPermissions.get(permission) == PackageManager.PERMISSION_GRANTED;
-        } else {
-            return true;
+        // It is safe to cache the PERMISSION_GRANTED result as the process gets killed if the
+        // user revokes the permission setting. However, PERMISSION_DENIED should not be
+        // cached as the process does not get killed if the user enables the permission setting.
+        if (!sPermissions.containsKey(permission)
+                || sPermissions.get(permission) == PackageManager.PERMISSION_DENIED) {
+            final Context context = Factory.get().getApplicationContext();
+            final int permissionState = context.checkSelfPermission(permission);
+            sPermissions.put(permission, permissionState);
         }
+        return sPermissions.get(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /** Does the app have all the specified permissions */

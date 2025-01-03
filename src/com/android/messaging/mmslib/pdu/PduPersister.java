@@ -31,15 +31,12 @@ import android.provider.Telephony.Mms.Addr;
 import android.provider.Telephony.Mms.Part;
 import android.provider.Telephony.MmsSms;
 import android.provider.Telephony.MmsSms.PendingMessages;
-import androidx.collection.ArrayMap;
-import androidx.collection.SimpleArrayMap;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
-import com.android.messaging.datamodel.data.ParticipantData;
 import com.android.messaging.mmslib.InvalidHeaderValueException;
 import com.android.messaging.mmslib.MmsException;
 import com.android.messaging.mmslib.SqliteWrapper;
@@ -51,7 +48,6 @@ import com.android.messaging.sms.MmsSmsUtils;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.UriUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -64,6 +60,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+
+import androidx.collection.ArrayMap;
+import androidx.collection.SimpleArrayMap;
 
 /**
  * This class is the high-level manager of PDU storage.
@@ -1481,15 +1480,8 @@ public class PduPersister {
         }
         // Record whether this mms message is a simple plain text or not. This is a hint for the
         // UI.
-        if (OsUtil.isAtLeastJB_MR1()) {
-            values.put(Mms.TEXT_ONLY, textOnly ? 1 : 0);
-        }
-
-        if (OsUtil.isAtLeastL_MR1()) {
-            values.put(Mms.SUBSCRIPTION_ID, subId);
-        } else {
-            Assert.equals(ParticipantData.DEFAULT_SELF_SUB_ID, subId);
-        }
+        values.put(Mms.TEXT_ONLY, textOnly ? 1 : 0);
+        values.put(Mms.SUBSCRIPTION_ID, subId);
 
         Uri res = null;
         if (existingUri) {

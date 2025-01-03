@@ -334,17 +334,8 @@
 
         <!-- Sms and Mms related items -->
 
-        <!-- Intents for Notification and Pre-KLP Delivery -->
+        <!-- Intents for Notification and Delivery -->
         <!-- Registered with the highest possible priority (max_int) -->
-        <receiver android:name=".receiver.MmsWapPushReceiver"
-                  android:enabled="false"
-                  android:exported="true"
-                  android:permission="android.permission.BROADCAST_WAP_PUSH">
-            <intent-filter android:priority="2147483647">
-                <action android:name="android.provider.Telephony.WAP_PUSH_RECEIVED" />
-                <data android:mimeType="application/vnd.wap.mms-message" />
-            </intent-filter>
-        </receiver>
         <receiver android:name=".receiver.SmsReceiver"
                   android:enabled="false"
                   android:exported="true"
@@ -356,28 +347,6 @@
                 <action android:name="android.provider.Telephony.MMS_DOWNLOADED" />
             </intent-filter>
         </receiver>
-
-        <!-- Intents for aborting SMS/MMS broadcasts pre-KLP -->
-        <!-- Registered for a priority just ahead of inbox Messaging apps (2) -->
-        <receiver android:name=".receiver.AbortMmsWapPushReceiver"
-                  android:enabled="false"
-                  android:exported="true"
-                  android:permission="android.permission.BROADCAST_WAP_PUSH">
-            <intent-filter android:priority="3">
-                <action android:name="android.provider.Telephony.WAP_PUSH_RECEIVED" />
-                <data android:mimeType="application/vnd.wap.mms-message" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".receiver.AbortSmsReceiver"
-                  android:enabled="false"
-                  android:exported="true"
-                  android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter android:priority="3">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Intents for KLP+ Delivery -->
         <receiver android:name=".receiver.MmsWapPushDeliverReceiver"
                   android:exported="true"
                   android:permission="android.permission.BROADCAST_WAP_PUSH">

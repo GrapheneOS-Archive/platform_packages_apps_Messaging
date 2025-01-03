@@ -36,7 +36,6 @@ public abstract class BaseWidgetProvider extends AppWidgetProvider {
     public static final int SIZE_LARGE  = 0;    // undefined == 0, which is the default, large
     public static final int SIZE_SMALL  = 1;
     public static final int SIZE_MEDIUM = 2;
-    public static final int SIZE_PRE_JB = 3;
 
     /**
      * Update all widgets in the list

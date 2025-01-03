@@ -33,7 +33,6 @@ public class MediaUtilImpl extends MediaUtil {
         // in app sounds that are not critical and should not impact running silent but also
         // shouldn't play at full ring volume if you want to hear your ringer but don't want
         // to be annoyed with in-app volume.
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         try {
             final MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);

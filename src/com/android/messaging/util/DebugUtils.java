@@ -302,10 +302,7 @@ public class DebugUtils {
                     final int length = dis.readInt();
                     final byte[] pdu = new byte[length];
                     dis.read(pdu, 0, length);
-                    messagesTemp[i] =
-                            OsUtil.isAtLeastM()
-                                    ? SmsMessage.createFromPdu(pdu, format)
-                                    : SmsMessage.createFromPdu(pdu);
+                    messagesTemp[i] = SmsMessage.createFromPdu(pdu, format);
                 }
                 messages = messagesTemp;
             } catch (final FileNotFoundException e) {

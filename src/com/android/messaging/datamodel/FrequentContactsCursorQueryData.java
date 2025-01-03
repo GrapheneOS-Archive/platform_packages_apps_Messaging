@@ -25,7 +25,6 @@ import android.provider.ContactsContract.Contacts;
 import com.android.messaging.util.FallbackStrategies;
 import com.android.messaging.util.FallbackStrategies.Strategy;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 
 /**
  * Helper for querying frequent (and/or starred) contacts.
@@ -90,8 +89,7 @@ public class FrequentContactsCursorQueryData extends CursorQueryData {
                 // queries. Using strequent_phone_only query as a fallback to display only phone
                 // contacts. This is the last-ditch effort; if this fails, we will display an
                 // empty frequent list (b/18354836).
-                final String strequentQueryParam = OsUtil.isAtLeastL() ?
-                        ContactsContract.STREQUENT_PHONE_ONLY : "strequent_phone_only";
+                final String strequentQueryParam = ContactsContract.STREQUENT_PHONE_ONLY;
                 // TODO: Handle enterprise contacts post M once contacts provider supports it
                 return Contacts.CONTENT_STREQUENT_URI.buildUpon()
                         .appendQueryParameter(strequentQueryParam, "true").build();

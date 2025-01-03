@@ -17,14 +17,13 @@
 package com.android.messaging.datamodel.data;
 
 import android.database.Cursor;
-import androidx.collection.ArrayMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.android.messaging.util.OsUtil;
+import androidx.collection.ArrayMap;
 
 /**
  * A class that contains the list of all self participants potentially involved in a conversation.
@@ -86,9 +85,6 @@ public class SelfParticipantsData {
      * Returns if a given self id represents the default self.
      */
     boolean isDefaultSelf(final String selfId) {
-        if (!OsUtil.isAtLeastL_MR1()) {
-            return true;
-        }
         final ParticipantData self = getSelfParticipantById(selfId);
         return self == null ? false : self.getSubId() == ParticipantData.DEFAULT_SELF_SUB_ID;
     }

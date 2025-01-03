@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.android.messaging.R;
-import com.android.messaging.util.OsUtil;
 
 public class ViewPagerTabStrip extends LinearLayout {
     private int mSelectedUnderlineThickness;
@@ -97,6 +96,6 @@ public class ViewPagerTabStrip extends LinearLayout {
     }
 
     private boolean isRtl() {
-        return OsUtil.isAtLeastJB_MR2() ? getLayoutDirection() == View.LAYOUT_DIRECTION_RTL : false;
+        return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 }

@@ -16,7 +16,6 @@
 
 package com.android.messaging.ui.conversation;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -28,9 +27,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -43,14 +40,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.text.BidiFormatter;
-import androidx.core.text.TextDirectionHeuristicsCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -99,7 +88,6 @@ import com.android.messaging.util.ChangeDefaultSmsAppHelper;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.ImeUtil;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.SafeAsyncTask;
 import com.android.messaging.util.TextUtil;
@@ -110,6 +98,15 @@ import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.core.text.BidiFormatter;
+import androidx.core.text.TextDirectionHeuristicsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 /**
  * Shows a list of messages/parts comprising a conversation.
@@ -1015,7 +1012,7 @@ public class ConversationFragment extends Fragment implements ConversationDataLi
     }
 
     private FragmentManager getFragmentManagerToUse() {
-        return OsUtil.isAtLeastJB_MR1() ? getChildFragmentManager() : getFragmentManager();
+        return getChildFragmentManager();
     }
 
     public MediaPicker getMediaPicker() {
@@ -1157,21 +1154,8 @@ public class ConversationFragment extends Fragment implements ConversationDataLi
                         }
                     })
                     .setNegativeButton(android.R.string.cancel, null);
-            if (OsUtil.isAtLeastJB_MR1()) {
-                builder.setOnDismissListener(new OnDismissListener() {
-                    @Override
-                    public void onDismiss(final DialogInterface dialog) {
-                        mHost.dismissActionMode();
-                    }
-                });
-            } else {
-                builder.setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel(final DialogInterface dialog) {
-                        mHost.dismissActionMode();
-                    }
-                });
-            }
+
+            builder.setOnDismissListener(dialog -> mHost.dismissActionMode());
             builder.create().show();
         } else {
             warnOfMissingActionConditions(false /*sending*/,

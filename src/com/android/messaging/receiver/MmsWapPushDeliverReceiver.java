@@ -21,13 +21,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Telephony;
 
+import com.android.messaging.datamodel.action.ReceiveMmsMessageAction;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.PhoneUtils;
 
 /**
- * Class that handles MMS WAP push intent from telephony on KLP+ Devices.
+ * Class that handles MMS WAP push intent from telephony.
  */
 public class MmsWapPushDeliverReceiver extends BroadcastReceiver {
+
+    static final String EXTRA_SUBSCRIPTION = "subscription";
+    static final String EXTRA_DATA = "data";
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
@@ -35,9 +39,14 @@ public class MmsWapPushDeliverReceiver extends BroadcastReceiver {
                 && ContentType.MMS_MESSAGE.equals(intent.getType())) {
             // Always convert negative subIds into -1
             int subId = PhoneUtils.getDefault().getEffectiveIncomingSubIdFromSystem(
-                    intent, MmsWapPushReceiver.EXTRA_SUBSCRIPTION);
-            byte[] data = intent.getByteArrayExtra(MmsWapPushReceiver.EXTRA_DATA);
-            MmsWapPushReceiver.mmsReceived(subId, data);
+                    intent, EXTRA_SUBSCRIPTION);
+            byte[] data = intent.getByteArrayExtra(EXTRA_DATA);
+            if (!PhoneUtils.getDefault().isSmsEnabled()) {
+                return;
+            }
+
+            final ReceiveMmsMessageAction action = new ReceiveMmsMessageAction(subId, data);
+            action.start();
         }
     }
 }

@@ -64,11 +64,8 @@ class FactoryImpl extends Factory {
     private SparseArray<BugleSubscriptionPrefs> mSubscriptionPrefs;
     private BugleCarrierConfigValuesLoader mCarrierConfigValuesLoader;
 
-    // Cached instance for Pre-L_MR1
-    private static final Object PHONEUTILS_INSTANCE_LOCK = new Object();
-    private static PhoneUtils sPhoneUtilsInstancePreLMR1 = null;
-    // Cached subId->instance for L_MR1 and beyond
-    private static final ConcurrentHashMap<Integer, PhoneUtils> sPhoneUtilsInstanceCacheLMR1 =
+    // Cached subId->instance
+    private static final ConcurrentHashMap<Integer, PhoneUtils> sPhoneUtilsInstanceCache =
             new ConcurrentHashMap<>();
 
     private FactoryImpl() {
@@ -197,31 +194,19 @@ class FactoryImpl extends Factory {
 
     @Override
     public PhoneUtils getPhoneUtils(int subId) {
-        if (OsUtil.isAtLeastL_MR1()) {
-            if (subId == ParticipantData.DEFAULT_SELF_SUB_ID) {
-                subId = SmsManager.getDefaultSmsSubscriptionId();
-            }
-            if (subId < 0) {
-                LogUtil.w(LogUtil.BUGLE_TAG, "PhoneUtils.getForLMR1(): invalid subId = " + subId);
-                subId = ParticipantData.DEFAULT_SELF_SUB_ID;
-            }
-            PhoneUtils instance = sPhoneUtilsInstanceCacheLMR1.get(subId);
-            if (instance == null) {
-                instance = new PhoneUtils.PhoneUtilsLMR1(subId);
-                sPhoneUtilsInstanceCacheLMR1.putIfAbsent(subId, instance);
-            }
-            return instance;
-        } else {
-            Assert.isTrue(subId == ParticipantData.DEFAULT_SELF_SUB_ID);
-            if (sPhoneUtilsInstancePreLMR1 == null) {
-                synchronized (PHONEUTILS_INSTANCE_LOCK) {
-                    if (sPhoneUtilsInstancePreLMR1 == null) {
-                        sPhoneUtilsInstancePreLMR1 = new PhoneUtils.PhoneUtilsPreLMR1();
-                    }
-                }
-            }
-            return sPhoneUtilsInstancePreLMR1;
+        if (subId == ParticipantData.DEFAULT_SELF_SUB_ID) {
+            subId = SmsManager.getDefaultSmsSubscriptionId();
         }
+        if (subId < 0) {
+            LogUtil.w(LogUtil.BUGLE_TAG, "getPhoneUtils(): invalid subId = " + subId);
+            subId = ParticipantData.DEFAULT_SELF_SUB_ID;
+        }
+        PhoneUtils instance = sPhoneUtilsInstanceCache.get(subId);
+        if (instance == null) {
+            instance = new PhoneUtils(subId);
+            sPhoneUtilsInstanceCache.putIfAbsent(subId, instance);
+        }
+        return instance;
     }
 
     @Override

@@ -23,8 +23,6 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import androidx.collection.ArrayMap;
-import androidx.collection.SimpleArrayMap;
 import android.text.TextUtils;
 
 import com.android.messaging.Factory;
@@ -45,7 +43,6 @@ import com.android.messaging.util.Assert.DoesNotRunOnMainThread;
 import com.android.messaging.util.AvatarUriUtil;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.UriUtil;
 import com.android.messaging.widget.WidgetConversationProvider;
@@ -55,7 +52,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.annotation.Nullable;
+
+import androidx.collection.ArrayMap;
+import androidx.collection.SimpleArrayMap;
 
 
 /**
@@ -586,7 +587,7 @@ public class BugleDatabaseOperations {
         // reading and if necessary creating the conversation.
         updateConversationRow(dbWrapper, conversationId, values);
 
-        if (shouldAutoSwitchSelfId && OsUtil.isAtLeastL_MR1()) {
+        if (shouldAutoSwitchSelfId) {
             // Normally, the draft message compose UI trusts its UI state for providing up-to-date
             // conversation self id. Therefore, notify UI through local broadcast receiver about
             // this external change so the change can be properly reflected.
@@ -643,7 +644,7 @@ public class BugleDatabaseOperations {
     static boolean addSelfIdAutoSwitchInfoToContentValues(final DatabaseWrapper dbWrapper,
             final MessageData message, final String conversationId, final ContentValues values) {
         // Only auto switch conversation self for incoming messages.
-        if (!OsUtil.isAtLeastL_MR1() || !message.getIsIncoming()) {
+        if (!message.getIsIncoming()) {
             return false;
         }
 

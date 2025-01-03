@@ -24,7 +24,6 @@ import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteFullException;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.android.common.contacts.DataUsageStatUpdater;
@@ -51,7 +50,6 @@ import com.android.messaging.util.Assert;
 import com.android.messaging.util.Assert.RunsOnMainThread;
 import com.android.messaging.util.ContactUtil;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.SafeAsyncTask;
 import com.android.messaging.widget.WidgetConversationProvider;
@@ -61,6 +59,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
 
 public class ConversationData extends BindableData {
 
@@ -595,7 +595,7 @@ public class ConversationData extends BindableData {
         Assert.isTrue(TextUtils.equals(mConversationId, message.getConversationId()));
         Assert.isTrue(binding.getData() == this);
 
-        if (!OsUtil.isAtLeastL_MR1() || message.getSelfId() == null) {
+        if (message.getSelfId() == null) {
             InsertNewMessageAction.insertNewMessage(message);
         } else {
             final int systemDefaultSubId = PhoneUtils.getDefault().getDefaultSmsSubscriptionId();
@@ -764,11 +764,9 @@ public class ConversationData extends BindableData {
             final SubscriptionListData subscriptionListData,
             final SelfParticipantsData selfParticipantsData) {
         // SIM indicators are shown in the UI only if:
-        // 1. Framework has MSIM support AND
-        // 2. The device has had multiple *active* subscriptions. AND
-        // 3. The message's subscription is active.
-        if (OsUtil.isAtLeastL_MR1() &&
-                selfParticipantsData.getSelfParticipantsCountExcludingDefault(true) > 1) {
+        // 1. The device has had multiple *active* subscriptions. AND
+        // 2. The message's subscription is active.
+        if (selfParticipantsData.getSelfParticipantsCountExcludingDefault(true) > 1) {
             return subscriptionListData.getActiveSubscriptionEntryBySelfId(selfParticipantId,
                     excludeDefault);
         }

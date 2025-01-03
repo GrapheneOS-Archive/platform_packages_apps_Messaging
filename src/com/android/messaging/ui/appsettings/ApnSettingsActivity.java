@@ -35,7 +35,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
 import android.provider.Telephony;
-import androidx.core.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,8 +48,9 @@ import com.android.messaging.sms.ApnDatabase;
 import com.android.messaging.sms.BugleApnSettingsLoader;
 import com.android.messaging.ui.BugleActionBarActivity;
 import com.android.messaging.ui.UIIntents;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
+
+import androidx.core.app.NavUtils;
 
 public class ApnSettingsActivity extends BugleActionBarActivity {
     private static final int DIALOG_RESTORE_DEFAULTAPN = 1001;
@@ -151,12 +151,8 @@ public class ApnSettingsActivity extends BugleActionBarActivity {
 
             mDatabase = ApnDatabase.getApnDatabase().getWritableDatabase();
 
-            if (OsUtil.isAtLeastL()) {
-                mUm = (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
-                if (!mUm.hasUserRestriction(UserManager.DISALLOW_CONFIG_MOBILE_NETWORKS)) {
-                    setHasOptionsMenu(true);
-                }
-            } else {
+            mUm = (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
+            if (!mUm.hasUserRestriction(UserManager.DISALLOW_CONFIG_MOBILE_NETWORKS)) {
                 setHasOptionsMenu(true);
             }
         }
@@ -172,8 +168,7 @@ public class ApnSettingsActivity extends BugleActionBarActivity {
                 lv.setEmptyView(empty);
             }
 
-            if (OsUtil.isAtLeastL() &&
-                    mUm.hasUserRestriction(UserManager.DISALLOW_CONFIG_MOBILE_NETWORKS)) {
+            if (mUm.hasUserRestriction(UserManager.DISALLOW_CONFIG_MOBILE_NETWORKS)) {
                 mUnavailable = true;
                 setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getActivity()));
                 return;

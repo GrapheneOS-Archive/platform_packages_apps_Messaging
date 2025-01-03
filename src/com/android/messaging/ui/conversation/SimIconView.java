@@ -17,16 +17,12 @@ package com.android.messaging.ui.conversation;
 
 import android.content.Context;
 import android.graphics.Outline;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
 import com.android.messaging.ui.ContactIconView;
-import com.android.messaging.util.Assert;
-import com.android.messaging.util.AvatarUriUtil;
-import com.android.messaging.util.OsUtil;
 
 /**
  * Shows SIM avatar icon in the SIM switcher / Self-send button.
@@ -34,14 +30,12 @@ import com.android.messaging.util.OsUtil;
 public class SimIconView extends ContactIconView {
     public SimIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if (OsUtil.isAtLeastL()) {
-            setOutlineProvider(new ViewOutlineProvider() {
-                @Override
-                public void getOutline(View v, Outline outline) {
-                    outline.setOval(0, 0, v.getWidth(), v.getHeight());
-                }
-            });
-        }
+        setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View v, Outline outline) {
+                outline.setOval(0, 0, v.getWidth(), v.getHeight());
+            }
+        });
     }
 
     @Override

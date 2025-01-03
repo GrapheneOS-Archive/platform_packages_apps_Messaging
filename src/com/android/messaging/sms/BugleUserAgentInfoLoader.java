@@ -17,15 +17,15 @@
 package com.android.messaging.sms;
 
 import android.content.Context;
-import androidx.appcompat.mms.UserAgentInfoLoader;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.android.messaging.util.BugleGservices;
 import com.android.messaging.util.BugleGservicesKeys;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.VersionUtil;
+
+import androidx.appcompat.mms.UserAgentInfoLoader;
 
 /**
  * User agent and UA profile URL loader
@@ -74,13 +74,12 @@ public class BugleUserAgentInfoLoader implements UserAgentInfoLoader {
     }
 
     private void loadLocked() {
-        if (OsUtil.isAtLeastKLP()) {
-            // load the MMS User agent and UaProfUrl from TelephonyManager APIs
-            final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(
-                    Context.TELEPHONY_SERVICE);
-            mUserAgent = telephonyManager.getMmsUserAgent();
-            mUAProfUrl = telephonyManager.getMmsUAProfUrl();
-        }
+        // load the MMS User agent and UaProfUrl from TelephonyManager APIs
+        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(
+                Context.TELEPHONY_SERVICE);
+        mUserAgent = telephonyManager.getMmsUserAgent();
+        mUAProfUrl = telephonyManager.getMmsUAProfUrl();
+
         // if user agent string isn't set, use the format "Bugle/<app_version>".
         if (TextUtils.isEmpty(mUserAgent)) {
             final String simpleVersionName = VersionUtil.getInstance(mContext).getSimpleName();

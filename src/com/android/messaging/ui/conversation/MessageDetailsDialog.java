@@ -37,7 +37,6 @@ import com.android.messaging.util.Assert;
 import com.android.messaging.util.Assert.DoesNotRunOnMainThread;
 import com.android.messaging.util.Dates;
 import com.android.messaging.util.DebugUtils;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.SafeAsyncTask;
 
@@ -356,9 +355,7 @@ public class MessageDetailsDialog {
 
     private static void appendSimInfo(final Resources res,
             final ParticipantData self, final StringBuilder outString) {
-        if (!OsUtil.isAtLeastL_MR1()
-                || self == null
-                || PhoneUtils.getDefault().getActiveSubscriptionCount() < 2) {
+        if (self == null || PhoneUtils.getDefault().getActiveSubscriptionCount() < 2) {
             return;
         }
         // The appended SIM info would look like:

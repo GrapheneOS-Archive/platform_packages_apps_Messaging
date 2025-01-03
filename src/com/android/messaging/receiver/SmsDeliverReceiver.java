@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Class that receives incoming SMS messages on KLP+ Devices.
+ * Class that receives incoming SMS messages.
  */
 public final class SmsDeliverReceiver extends BroadcastReceiver {
     @Override

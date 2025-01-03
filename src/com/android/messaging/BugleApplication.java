@@ -39,7 +39,6 @@ import com.android.messaging.util.BuglePrefsKeys;
 import com.android.messaging.util.DebugUtils;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.NotificationChannelUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.Trace;
 import com.google.common.annotations.VisibleForTesting;
@@ -122,9 +121,7 @@ public class BugleApplication extends Application implements UncaughtExceptionHa
         // Fixup messages in flight if we crashed and send any pending
         dataModel.onApplicationCreated();
         // Register carrier config change receiver
-        if (OsUtil.isAtLeastM()) {
-            registerCarrierConfigChangeReceiver(context);
-        }
+        registerCarrierConfigChangeReceiver(context);
 
         Trace.endSection();
     }

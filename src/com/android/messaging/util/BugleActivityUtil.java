@@ -18,17 +18,13 @@ package com.android.messaging.util;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.UserManager;
-import android.text.TextUtils;
 
 import com.android.messaging.Factory;
 import com.android.messaging.R;
 import com.android.messaging.datamodel.DataModel;
-import com.android.messaging.ui.conversation.ConversationActivity;
-import com.android.messaging.ui.conversationlist.ConversationListActivity;
 
 /**
  * Utility class including logic to verify requirements to run Bugle and other activity startup
@@ -62,10 +58,6 @@ public class BugleActivityUtil {
      * @return true if the user has SMS permissions, otherwise false.
      */
     private static boolean checkHasSmsPermissionsForUser(Context context, Activity activity) {
-        if (!OsUtil.isAtLeastL()) {
-            // UserManager.DISALLOW_SMS added in L. No multiuser phones before this
-            return true;
-        }
         UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         if (userManager.hasUserRestriction(UserManager.DISALLOW_SMS)) {
             new AlertDialog.Builder(activity)

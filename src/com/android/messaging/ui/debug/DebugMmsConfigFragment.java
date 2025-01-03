@@ -31,10 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.messaging.R;
-import com.android.messaging.datamodel.data.ParticipantData;
 import com.android.messaging.sms.MmsConfig;
-import com.android.messaging.ui.debug.DebugMmsConfigItemView.MmsConfigItemListener;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 
 import java.util.ArrayList;
@@ -79,11 +76,8 @@ public class DebugMmsConfigFragment extends Fragment {
     }
 
     public static Integer[] getActiveSubIds() {
-        if (!OsUtil.isAtLeastL_MR1()) {
-            return new Integer[] { ParticipantData.DEFAULT_SELF_SUB_ID };
-        }
         final List<SubscriptionInfo> subRecords =
-                PhoneUtils.getDefault().toLMr1().getActiveSubscriptionInfoList();
+                PhoneUtils.getDefault().getActiveSubscriptionInfoList();
         if (subRecords == null) {
             return new Integer[0];
         }

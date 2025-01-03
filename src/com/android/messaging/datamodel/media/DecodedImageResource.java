@@ -24,7 +24,6 @@ import com.android.messaging.util.Assert;
 import com.android.messaging.util.Assert.DoesNotRunOnMainThread;
 import com.android.messaging.util.ImageUtils;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 
 import java.util.List;
 
@@ -109,11 +108,7 @@ public class DecodedImageResource extends ImageResource {
         acquireLock();
         try {
             Assert.notNull(mBitmap);
-            if (OsUtil.isAtLeastKLP()) {
-                return mBitmap.getAllocationByteCount();
-            } else {
-                return mBitmap.getRowBytes() * mBitmap.getHeight();
-            }
+            return mBitmap.getAllocationByteCount();
         } finally {
             releaseLock();
         }

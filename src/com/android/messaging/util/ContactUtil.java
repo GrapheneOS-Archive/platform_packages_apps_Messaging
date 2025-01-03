@@ -18,7 +18,6 @@ package com.android.messaging.util;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -34,7 +33,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.android.ex.chips.RecipientEntry;
-import com.android.messaging.Factory;
 import com.android.messaging.datamodel.CursorQueryData;
 import com.android.messaging.datamodel.FrequentContactsCursorQueryData;
 import com.android.messaging.datamodel.data.ParticipantData;
@@ -519,27 +517,21 @@ public class ContactUtil {
      * Returns if a given contact id belongs to managed profile.
      */
     public static boolean isEnterpriseContactId(final long contactId) {
-        return OsUtil.isAtLeastL() && ContactsContract.Contacts.isEnterpriseContactId(contactId);
+        return ContactsContract.Contacts.isEnterpriseContactId(contactId);
     }
 
     /**
      * Returns Email lookup uri that will query both primary and corp profile
      */
     private static Uri getEmailContentLookupUri() {
-        if (OsUtil.isAtLeastM()) {
-            return Email.ENTERPRISE_CONTENT_LOOKUP_URI;
-        }
-        return Email.CONTENT_LOOKUP_URI;
+        return Email.ENTERPRISE_CONTENT_LOOKUP_URI;
     }
 
     /**
      * Returns PhoneLookup URI.
      */
     public static Uri getPhoneLookupUri() {
-        if (OsUtil.isAtLeastM()) {
-            return PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI;
-        }
-        return PhoneLookup.CONTENT_FILTER_URI;
+        return PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI;
     }
 
     public static boolean hasReadContactsPermission() {

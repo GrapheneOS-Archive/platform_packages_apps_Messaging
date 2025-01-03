@@ -27,20 +27,11 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.provider.Telephony;
 import android.provider.Telephony.Sms;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationCompat.Style;
-import androidx.core.app.NotificationManagerCompat;
-
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import com.android.messaging.Factory;
 import com.android.messaging.R;
 import com.android.messaging.datamodel.BugleNotifications;
 import com.android.messaging.datamodel.MessageNotificationState;
-import com.android.messaging.datamodel.NoConfirmationSmsSendService;
 import com.android.messaging.datamodel.action.ReceiveSmsMessageAction;
 import com.android.messaging.sms.MmsUtils;
 import com.android.messaging.ui.UIIntents;
@@ -53,12 +44,19 @@ import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PendingIntentConstants;
 import com.android.messaging.util.PhoneUtils;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
+import androidx.core.app.NotificationCompat.Style;
+import androidx.core.app.NotificationManagerCompat;
+
 /**
  * Class that receives incoming SMS messages through android.provider.Telephony.SMS_RECEIVED
  *
- * This class serves two purposes:
- * - Process phone verification SMS messages
- * - Handle SMS messages when the user has enabled us to be the default SMS app (Pre-KLP)
+ * This class processes phone verification SMS messages
  */
 public final class SmsReceiver extends BroadcastReceiver {
     private static final String TAG = LogUtil.BUGLE_TAG;
@@ -66,43 +64,19 @@ public final class SmsReceiver extends BroadcastReceiver {
     private static ArrayList<Pattern> sIgnoreSmsPatterns;
 
     /**
-     * Enable or disable the SmsReceiver as appropriate. Pre-KLP we use this receiver for
-     * receiving incoming SMS messages. For KLP+ this receiver is not used when running as the
+     * Enable or disable the SmsReceiver as appropriate. This receiver is not used when running as the
      * primary user and the SmsDeliverReceiver is used for receiving incoming SMS messages.
      * When running as a secondary user, this receiver is still used to trigger the incoming
      * notification.
      */
     public static void updateSmsReceiveHandler(final Context context) {
-        boolean smsReceiverEnabled;
-        boolean mmsWapPushReceiverEnabled;
-        boolean respondViaMessageEnabled;
-        boolean broadcastAbortEnabled;
 
-        if (OsUtil.isAtLeastKLP()) {
-            // When we're running as the secondary user, we don't get the new SMS_DELIVER intent,
-            // only the primary user receives that. As secondary, we need to go old-school and
-            // listen for the SMS_RECEIVED intent. For the secondary user, use this SmsReceiver
-            // for both sms and mms notification. For the primary user on KLP (and above), we don't
-            // use the SmsReceiver.
-            smsReceiverEnabled = OsUtil.isSecondaryUser();
-            // On KLP use the new deliver event for mms
-            mmsWapPushReceiverEnabled = false;
-            // On KLP we need to always enable this handler to show in the list of sms apps
-            respondViaMessageEnabled = true;
-            // On KLP we don't need to abort the broadcast
-            broadcastAbortEnabled = false;
-        } else {
-            // On JB we use the sms receiver for both sms/mms delivery
-            final boolean carrierSmsEnabled = PhoneUtils.getDefault().isSmsEnabled();
-            smsReceiverEnabled = carrierSmsEnabled;
-
-            // On JB we use the mms receiver when sms/mms is enabled
-            mmsWapPushReceiverEnabled = carrierSmsEnabled;
-            // On JB this is dynamic to make sure we don't show in dialer if sms is disabled
-            respondViaMessageEnabled = carrierSmsEnabled;
-            // On JB we need to abort broadcasts if SMS is enabled
-            broadcastAbortEnabled = carrierSmsEnabled;
-        }
+        // When we're running as the secondary user, we don't get the new SMS_DELIVER intent,
+        // only the primary user receives that. As secondary, we need to go old-school and
+        // listen for the SMS_RECEIVED intent. For the secondary user, use this SmsReceiver
+        // for both sms and mms notification. For the primary user on KLP (and above), we don't
+        // use the SmsReceiver.
+        boolean smsReceiverEnabled = OsUtil.isSecondaryUser();
 
         final PackageManager packageManager = context.getPackageManager();
         final boolean logv = LogUtil.isLoggable(TAG, LogUtil.VERBOSE);
@@ -120,57 +94,6 @@ public final class SmsReceiver extends BroadcastReceiver {
             }
             packageManager.setComponentEnabledSetting(
                     new ComponentName(context, SmsReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        }
-        if (mmsWapPushReceiverEnabled) {
-            if (logv) {
-                LogUtil.v(TAG, "Enabling MMS message receiving");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, MmsWapPushReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        } else {
-            if (logv) {
-                LogUtil.v(TAG, "Disabling MMS message receiving");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, MmsWapPushReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        }
-        if (broadcastAbortEnabled) {
-            if (logv) {
-                LogUtil.v(TAG, "Enabling SMS/MMS broadcast abort");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, AbortSmsReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, AbortMmsWapPushReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        } else {
-            if (logv) {
-                LogUtil.v(TAG, "Disabling SMS/MMS broadcast abort");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, AbortSmsReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, AbortMmsWapPushReceiver.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        }
-        if (respondViaMessageEnabled) {
-            if (logv) {
-                LogUtil.v(TAG, "Enabling respond via message intent");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, NoConfirmationSmsSendService.class),
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        } else {
-            if (logv) {
-                LogUtil.v(TAG, "Disabling respond via message intent");
-            }
-            packageManager.setComponentEnabledSetting(
-                    new ComponentName(context, NoConfirmationSmsSendService.class),
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         }
     }
@@ -214,9 +137,7 @@ public final class SmsReceiver extends BroadcastReceiver {
         // seen for the telephony db.
         messageValues.put(Sms.Inbox.READ, 0);
         messageValues.put(Sms.Inbox.SEEN, 0);
-        if (OsUtil.isAtLeastL_MR1()) {
-            messageValues.put(Sms.SUBSCRIPTION_ID, subId);
-        }
+        messageValues.put(Sms.SUBSCRIPTION_ID, subId);
 
         if (messages[0].getMessageClass() == android.telephony.SmsMessage.MessageClass.CLASS_0 ||
                 DebugUtils.debugClassZeroSmsEnabled()) {
@@ -230,7 +151,7 @@ public final class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         LogUtil.v(TAG, "SmsReceiver.onReceive " + intent);
-        // On KLP+ we only take delivery of SMS messages in SmsDeliverReceiver.
+        // We only take delivery of SMS messages in SmsDeliverReceiver.
         if (PhoneUtils.getDefault().isSmsEnabled()) {
             final String action = intent.getAction();
             if (OsUtil.isSecondaryUser() &&
@@ -238,8 +159,6 @@ public final class SmsReceiver extends BroadcastReceiver {
                             // TODO: update this with the actual constant from Telephony
                             "android.provider.Telephony.MMS_DOWNLOADED".equals(action))) {
                 postNewMessageSecondaryUserNotification();
-            } else if (!OsUtil.isAtLeastKLP()) {
-                deliverSmsIntent(context, intent);
             }
         }
     }
@@ -365,14 +284,5 @@ public final class SmsReceiver extends BroadcastReceiver {
             return null;
         }
         return messages;
-    }
-
-
-    /**
-     * Check the specified SMS intent to see if the message should be ignored
-     * @return true if the message should be ignored
-     */
-    public static boolean shouldIgnoreMessage(Intent intent) {
-        return getMessagesFromIntent(intent) == null;
     }
 }

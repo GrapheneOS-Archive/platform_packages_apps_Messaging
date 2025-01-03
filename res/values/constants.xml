@@ -53,17 +53,6 @@
     <string name="dump_mms_pref_key" translatable="false">dump_mms</string>
     <bool name="dump_mms_pref_default" translatable="false">false</bool>
 
-
-    <!-- SMS/MMS settings keys -->
-    <!--
-    TODO: Several of these are currently unused but are expected to be needed to
-    implement SMS/MMS delivery and basic settings. Once we have the core functionality in place
-    we should do a pass to remove any unused values here.
-    -->
-    <string name="sms_apns_key" translatable="false">sms_apns_key</string>
-    <string name="use_local_apn_pref_key" translatable="false">use_local_apn_pref_key</string>
-    <bool name="use_local_apn_pref_default" translatable="false">false</bool>
-
     <integer name="mediapicker_transition_duration">600</integer><!-- ms -->
     <integer name="asyncimage_transition_duration">300</integer><!-- ms -->
     <integer name="compose_transition_duration">300</integer><!-- ms -->

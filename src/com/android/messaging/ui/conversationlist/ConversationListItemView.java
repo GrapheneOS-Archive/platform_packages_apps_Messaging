@@ -22,8 +22,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
-import androidx.core.text.BidiFormatter;
-import androidx.core.text.TextDirectionHeuristicsCompat;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -53,13 +51,15 @@ import com.android.messaging.ui.SnackBarInteraction;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.ContentType;
 import com.android.messaging.util.ImageUtils;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.Typefaces;
 import com.android.messaging.util.UiUtils;
 import com.android.messaging.util.UriUtil;
 
 import java.util.List;
+
+import androidx.core.text.BidiFormatter;
+import androidx.core.text.TextDirectionHeuristicsCompat;
 
 /**
  * The view for a single entry in a conversation list.
@@ -167,9 +167,7 @@ public class ConversationListItemView extends FrameLayout implements OnClickList
         mListItemReadTypeface = Typefaces.getRobotoNormal();
         mListItemUnreadTypeface = Typefaces.getRobotoBold();
 
-        if (OsUtil.isAtLeastL()) {
-            setTransitionGroup(true);
-        }
+        setTransitionGroup(true);
     }
 
     @Override

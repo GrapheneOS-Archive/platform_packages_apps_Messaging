@@ -22,7 +22,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import androidx.collection.ArrayMap;
 import android.telephony.SubscriptionInfo;
 import android.text.TextUtils;
 
@@ -49,6 +48,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import androidx.collection.ArrayMap;
 
 /**
  * Utility class for refreshing participant information based on matching contact. This updates
@@ -354,14 +355,10 @@ public class ParticipantRefresh {
      * that any other older SIM self participants are marked as inactive.
      */
     private static void refreshSelfParticipantList() {
-        if (!OsUtil.isAtLeastL_MR1()) {
-            return;
-        }
-
         final DatabaseWrapper db = DataModel.get().getDatabase();
 
         final List<SubscriptionInfo> subInfoRecords =
-                PhoneUtils.getDefault().toLMr1().getActiveSubscriptionInfoList();
+                PhoneUtils.getDefault().getActiveSubscriptionInfoList();
         final ArrayMap<Integer, SubscriptionInfo> activeSubscriptionIdToRecordMap =
                 new ArrayMap<Integer, SubscriptionInfo>();
         db.beginTransaction();
@@ -446,13 +443,11 @@ public class ParticipantRefresh {
             changed = SELF_PHONE_NUMBER_OR_SUBSCRIPTION_CHANGED;
         }
 
-        if (OsUtil.isAtLeastL_MR1()) {
-            // Refresh the subscription info based on information from SubscriptionManager.
-            final SubscriptionInfo subscriptionInfo =
-                    PhoneUtils.get(participantData.getSubId()).toLMr1().getActiveSubscriptionInfo();
-            if (participantData.updateSubscriptionInfoForSelfIfChanged(subscriptionInfo)) {
-                changed = SELF_PHONE_NUMBER_OR_SUBSCRIPTION_CHANGED;
-            }
+        // Refresh the subscription info based on information from SubscriptionManager.
+        final SubscriptionInfo subscriptionInfo =
+                PhoneUtils.get(participantData.getSubId()).getActiveSubscriptionInfo();
+        if (participantData.updateSubscriptionInfoForSelfIfChanged(subscriptionInfo)) {
+            changed = SELF_PHONE_NUMBER_OR_SUBSCRIPTION_CHANGED;
         }
 
         // For self participant, try getting name/avatar from self profile in CP2 first.

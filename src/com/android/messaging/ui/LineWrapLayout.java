@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.UiUtils;
 
 import java.util.ArrayList;
@@ -64,9 +63,9 @@ public class LineWrapLayout extends ViewGroup {
             if (currChild.getVisibility() == GONE) {
                 continue;
             }
-            LayoutParams layoutParams = (LayoutParams) currChild.getLayoutParams();
-            int startMargin = layoutParams.getStartMargin();
-            int endMargin = layoutParams.getEndMargin();
+            var layoutParams = (FrameLayout.LayoutParams) currChild.getLayoutParams();
+            int startMargin = layoutParams.getMarginStart();
+            int endMargin = layoutParams.getMarginEnd();
             currChild.measure(childWidthSpec, MeasureSpec.UNSPECIFIED);
             int childMeasuredWidth = currChild.getMeasuredWidth() + startMargin + endMargin;
             int childMeasuredHeight = currChild.getMeasuredHeight() + layoutParams.topMargin +
@@ -112,11 +111,11 @@ public class LineWrapLayout extends ViewGroup {
             if (currChild.getVisibility() == GONE) {
                 continue;
             }
-            LayoutParams layoutParams = (LayoutParams) currChild.getLayoutParams();
+            var layoutParams = (FrameLayout.LayoutParams) currChild.getLayoutParams();
             int childWidth = currChild.getMeasuredWidth();
             int childHeight = currChild.getMeasuredHeight();
-            int startMargin = layoutParams.getStartMargin();
-            int endMargin = layoutParams.getEndMargin();
+            int startMargin = layoutParams.getMarginStart();
+            int endMargin = layoutParams.getMarginEnd();
 
             if ((x + childWidth + startMargin + endMargin) > width) {
                 // new line
@@ -141,11 +140,11 @@ public class LineWrapLayout extends ViewGroup {
             if (currChild.getVisibility() == GONE) {
                 continue;
             }
-            LayoutParams layoutParams = (LayoutParams) currChild.getLayoutParams();
+            var layoutParams = (FrameLayout.LayoutParams) currChild.getLayoutParams();
             int childWidth = currChild.getMeasuredWidth();
             int childHeight = currChild.getMeasuredHeight();
-            int startMargin = layoutParams.getStartMargin();
-            int endMargin = layoutParams.getEndMargin();
+            int startMargin = layoutParams.getMarginStart();
+            int endMargin = layoutParams.getMarginEnd();
 
             if ((x + childWidth + startMargin + endMargin) > width) {
                 // new line
@@ -171,7 +170,7 @@ public class LineWrapLayout extends ViewGroup {
                 }
             }
 
-            if (OsUtil.isAtLeastJB_MR2() && getResources().getConfiguration()
+            if (getResources().getConfiguration()
                     .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                 currChild.layout(width - startPositionX - childWidth, startPositionY,
                         width - startPositionX, startPositionY + childHeight);
@@ -186,47 +185,17 @@ public class LineWrapLayout extends ViewGroup {
     }
 
     @Override
-    protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
-        return new LayoutParams(p);
+    protected FrameLayout.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
+        return new FrameLayout.LayoutParams(p);
     }
 
     @Override
-    public LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new LayoutParams(getContext(), attrs);
+    public FrameLayout.LayoutParams generateLayoutParams(AttributeSet attrs) {
+        return new FrameLayout.LayoutParams(getContext(), attrs);
     }
 
     @Override
-    protected LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-    }
-
-    public static final class LayoutParams extends FrameLayout.LayoutParams {
-        public LayoutParams(Context c, AttributeSet attrs) {
-            super(c, attrs);
-        }
-
-        public LayoutParams(int width, int height) {
-            super(width, height);
-        }
-
-        public LayoutParams(ViewGroup.LayoutParams source) {
-            super(source);
-        }
-
-        public int getStartMargin() {
-            if (OsUtil.isAtLeastJB_MR2()) {
-                return getMarginStart();
-            } else {
-                return leftMargin;
-            }
-        }
-
-        public int getEndMargin() {
-            if (OsUtil.isAtLeastJB_MR2()) {
-                return getMarginEnd();
-            } else {
-                return rightMargin;
-            }
-        }
+    protected FrameLayout.LayoutParams generateDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 }

@@ -19,7 +19,6 @@ package com.android.messaging.ui.mediapicker;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import androidx.appcompat.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,11 +29,12 @@ import android.widget.ImageButton;
 
 import com.android.messaging.R;
 import com.android.messaging.datamodel.binding.ImmutableBindingRef;
-import com.android.messaging.datamodel.data.MediaPickerData;
 import com.android.messaging.datamodel.data.DraftMessageData.DraftMessageSubscriptionDataProvider;
+import com.android.messaging.datamodel.data.MediaPickerData;
 import com.android.messaging.ui.BasePagerViewHolder;
 import com.android.messaging.util.Assert;
-import com.android.messaging.util.OsUtil;
+
+import androidx.appcompat.app.ActionBar;
 
 abstract class MediaChooser extends BasePagerViewHolder
         implements DraftMessageSubscriptionDataProvider {
@@ -107,9 +107,9 @@ abstract class MediaChooser extends BasePagerViewHolder
     }
 
     protected FragmentManager getFragmentManager() {
-        return OsUtil.isAtLeastJB_MR1() ? mMediaPicker.getChildFragmentManager() :
-                mMediaPicker.getFragmentManager();
+        return mMediaPicker.getChildFragmentManager();
     }
+
     protected LayoutInflater getLayoutInflater() {
         return LayoutInflater.from(getContext());
     }

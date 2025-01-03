@@ -16,14 +16,12 @@
 
 package com.android.messaging.util;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.PhoneNumberUtils;
@@ -33,24 +31,21 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import androidx.collection.ArrayMap;
-import androidx.core.os.BuildCompat;
-
 import com.android.messaging.Factory;
 import com.android.messaging.R;
 import com.android.messaging.datamodel.data.ParticipantData;
 import com.android.messaging.sms.MmsSmsUtils;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.collection.ArrayMap;
 
 /**
  * This class abstracts away platform dependency of calling telephony related
@@ -58,12 +53,11 @@ import java.util.Locale;
  * a bit of SmsManager.
  *
  * The class instance can only be obtained via the get(int subId) method parameterized
- * by a SIM subscription ID. On pre-L_MR1, the subId is not used and it has to be
- * the default subId (-1).
+ * by a SIM subscription ID.
  *
  * A convenient getDefault() method is provided for default subId (-1) on any platform
  */
-public abstract class PhoneUtils {
+public class PhoneUtils {
     private static final String TAG = LogUtil.BUGLE_TAG;
 
     private static final int MINIMUM_PHONE_NUMBER_LENGTH_TO_FORMAT = 6;
@@ -78,6 +72,7 @@ public abstract class PhoneUtils {
 
     protected final Context mContext;
     protected final TelephonyManager mTelephonyManager;
+    private final SubscriptionManager mSubscriptionManager;
     protected final int mSubId;
 
     public PhoneUtils(int subId) {
@@ -85,6 +80,7 @@ public abstract class PhoneUtils {
         mContext = Factory.get().getApplicationContext();
         mTelephonyManager =
                 (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        mSubscriptionManager = SubscriptionManager.from(Factory.get().getApplicationContext());
     }
 
     /**
@@ -92,101 +88,173 @@ public abstract class PhoneUtils {
      *
      * @return the country code on the SIM
      */
-    public abstract String getSimCountry();
+    public String getSimCountry() {
+        final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
+        if (subInfo != null) {
+            final String country = subInfo.getCountryIso();
+            if (TextUtils.isEmpty(country)) {
+                return null;
+            }
+            return country.toUpperCase();
+        }
+        return null;
+    }
 
     /**
      * Get number of SIM slots
      *
      * @return the SIM slot count
      */
-    public abstract int getSimSlotCount();
+    public int getSimSlotCount() {
+        return mSubscriptionManager.getActiveSubscriptionInfoCountMax();
+    }
 
     /**
      * Get SIM's carrier name
      *
      * @return the carrier name of the SIM
      */
-    public abstract String getCarrierName();
+    public String getCarrierName() {
+        final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
+        if (subInfo != null) {
+            final CharSequence displayName = subInfo.getDisplayName();
+            if (!TextUtils.isEmpty(displayName)) {
+                return displayName.toString();
+            }
+            final CharSequence carrierName = subInfo.getCarrierName();
+            if (carrierName != null) {
+                return carrierName.toString();
+            }
+        }
+        return null;
+    }
 
     /**
      * Check if there is SIM inserted on the device
      *
      * @return true if there is SIM inserted, false otherwise
      */
-    public abstract boolean hasSim();
+    public boolean hasSim() {
+        return mSubscriptionManager.getActiveSubscriptionInfoCount() > 0;
+    }
 
     /**
      * Check if the SIM is roaming
      *
      * @return true if the SIM is in romaing state, false otherwise
      */
-    public abstract boolean isRoaming();
+    public boolean isRoaming() {
+        return mSubscriptionManager.isNetworkRoaming(mSubId);
+    }
 
     /**
      * Get the MCC and MNC in integer of the SIM's provider
      *
      * @return an array of two ints, [0] is the MCC code and [1] is the MNC code
      */
-    public abstract int[] getMccMnc();
+    public int[] getMccMnc() {
+        int mcc = 0;
+        int mnc = 0;
+        final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
+        if (subInfo != null) {
+            mcc = subInfo.getMcc();
+            mnc = subInfo.getMnc();
+        }
+        return new int[]{mcc, mnc};
+    }
 
     /**
      * Get the mcc/mnc string
      *
      * @return the text of mccmnc string
      */
-    public abstract String getSimOperatorNumeric();
+    public String getSimOperatorNumeric() {
+        return getMccMncString(getMccMnc());
+    }
 
     /**
      * Get the SIM's self raw number, i.e. not canonicalized
      *
      * @param allowOverride Whether to use the app's setting to override the self number
      * @return the original self number
-     * @throws IllegalStateException if no active subscription on L-MR1+
+     * @throws IllegalStateException if no active subscription
      */
-    public abstract String getSelfRawNumber(final boolean allowOverride);
+    public String getSelfRawNumber(final boolean allowOverride) {
+        if (allowOverride) {
+            final String userDefinedNumber = getNumberFromPrefs(mContext, mSubId);
+            if (!TextUtils.isEmpty(userDefinedNumber)) {
+                return userDefinedNumber;
+            }
+        }
+
+        final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
+        if (subInfo != null) {
+            String phoneNumber = subInfo.getNumber();
+            if (TextUtils.isEmpty(phoneNumber) && LogUtil.isLoggable(TAG, LogUtil.DEBUG)) {
+                LogUtil.d(TAG, "SubscriptionInfo phone number for self is empty!");
+            }
+            return phoneNumber;
+        }
+        LogUtil.w(TAG, "PhoneUtils.getSelfRawNumber: subInfo is null for " + mSubId);
+        throw new IllegalStateException("No active subscription");
+    }
 
     /**
      * Returns the "effective" subId, or the subId used in the context of actual messages,
      * conversations and subscription-specific settings, for the given "nominal" sub id.
      *
-     * For pre-L-MR1 platform, this should always be
-     * {@value com.android.messaging.datamodel.data.ParticipantData#DEFAULT_SELF_SUB_ID};
-     *
-     * On the other hand, for L-MR1 and above, DEFAULT_SELF_SUB_ID will be mapped to the system
-     * default subscription id for SMS.
+     * DEFAULT_SELF_SUB_ID will be mapped to the system default subscription id for SMS.
      *
      * @param subId The input subId
      * @return the real subId if we can convert
      */
-    public abstract int getEffectiveSubId(int subId);
+    public int getEffectiveSubId(int subId) {
+        if (subId == ParticipantData.DEFAULT_SELF_SUB_ID) {
+            return getDefaultSmsSubscriptionId();
+        }
+        return subId;
+    }
 
     /**
      * Returns the number of active subscriptions in the device.
      */
-    public abstract int getActiveSubscriptionCount();
+    public int getActiveSubscriptionCount() {
+        return mSubscriptionManager.getActiveSubscriptionInfoCount();
+    }
 
     /**
      * Get {@link SmsManager} instance
      *
      * @return the relevant SmsManager instance based on OS version and subId
      */
-    public abstract SmsManager getSmsManager();
+    public SmsManager getSmsManager() {
+        return SmsManager.getSmsManagerForSubscriptionId(mSubId);
+    }
 
     /**
      * Get the default SMS subscription id
      *
      * @return the default sub ID
      */
-    public abstract int getDefaultSmsSubscriptionId();
+    public int getDefaultSmsSubscriptionId() {
+        final int systemDefaultSubId = SmsManager.getDefaultSmsSubscriptionId();
+        if (systemDefaultSubId < 0) {
+            // Always use -1 for any negative subId from system
+            return ParticipantData.DEFAULT_SELF_SUB_ID;
+        }
+        return systemDefaultSubId;
+    }
 
     /**
      * Returns if there's currently a system default SIM selected for sending SMS.
      */
-    public abstract boolean getHasPreferredSmsSim();
+    public boolean getHasPreferredSmsSim() {
+        return getDefaultSmsSubscriptionId() != ParticipantData.DEFAULT_SELF_SUB_ID;
+    }
 
     /**
-     * For L_MR1, system may return a negative subId. Convert this into our own
-     * subId, so that we consistently use -1 for invalid or default.
+     * System may return a negative subId. Convert this into our own subId, so that we consistently
+     * use -1 for invalid or default.
      *
      * see b/18629526 and b/18670346
      *
@@ -194,7 +262,10 @@ public abstract class PhoneUtils {
      * @param extraName The name of the sub id extra
      * @return the subId that is valid and meaningful for the app
      */
-    public abstract int getEffectiveIncomingSubIdFromSystem(Intent intent, String extraName);
+    public int getEffectiveIncomingSubIdFromSystem(Intent intent, String extraName) {
+        return getEffectiveIncomingSubIdFromSystem(intent.getIntExtra(extraName,
+                ParticipantData.DEFAULT_SELF_SUB_ID));
+    }
 
     /**
      * Get the subscription_id column value from a telephony provider cursor
@@ -203,438 +274,110 @@ public abstract class PhoneUtils {
      * @param subIdIndex The index of the subId column in the cursor
      * @return the subscription_id column value from the cursor
      */
-    public abstract int getSubIdFromTelephony(Cursor cursor, int subIdIndex);
+    public int getSubIdFromTelephony(Cursor cursor, int subIdIndex) {
+        return getEffectiveIncomingSubIdFromSystem(cursor.getInt(subIdIndex));
+    }
 
     /**
      * Check if data roaming is enabled
      *
      * @return true if data roaming is enabled, false otherwise
      */
-    public abstract boolean isDataRoamingEnabled();
+    public boolean isDataRoamingEnabled() {
+        final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
+        if (subInfo == null) {
+            // There is nothing we can do if system give us empty sub info
+            LogUtil.e(TAG, "PhoneUtils.isDataRoamingEnabled: system return empty sub info for "
+                    + mSubId);
+            return false;
+        }
+        return subInfo.getDataRoaming() != SubscriptionManager.DATA_ROAMING_DISABLE;
+    }
 
     /**
      * Check if mobile data is enabled
      *
      * @return true if mobile data is enabled, false otherwise
      */
-    public abstract boolean isMobileDataEnabled();
+    public boolean isMobileDataEnabled() {
+        return mTelephonyManager.createForSubscriptionId(mSubId)
+                .isDataEnabledForReason(TelephonyManager.DATA_ENABLED_REASON_USER);
+    }
 
     /**
      * Get the set of self phone numbers, all normalized
      *
      * @return the set of normalized self phone numbers
      */
-    public abstract HashSet<String> getNormalizedSelfNumbers();
+    public HashSet<String> getNormalizedSelfNumbers() {
+        final HashSet<String> numbers = new HashSet<>();
+        for (SubscriptionInfo info : getActiveSubscriptionInfoList()) {
+            numbers.add(PhoneUtils.get(info.getSubscriptionId()).getCanonicalForSelf(
+                    true/*allowOverride*/));
+        }
+        return numbers;
+    }
+
 
     /**
-     * This interface packages methods should only compile on L_MR1.
-     * This is needed to make unit tests happy when mockito tries to
-     * mock these methods. Calling on these methods on L_MR1 requires
-     * an extra invocation of toMr1().
+     * Get this SIM's information.
+     *
+     * @return the subscription info of the SIM
      */
-    public interface LMr1 {
-        /**
-         * Get this SIM's information. Only applies to L_MR1 above
-         *
-         * @return the subscription info of the SIM
-         */
-        public abstract SubscriptionInfo getActiveSubscriptionInfo();
-
-        /**
-         * Get the list of active SIMs in system. Only applies to L_MR1 above
-         *
-         * @return the list of subscription info for all inserted SIMs
-         */
-        public abstract List<SubscriptionInfo> getActiveSubscriptionInfoList();
-
-        /**
-         * Register subscription change listener. Only applies to L_MR1 above
-         *
-         * @param listener The listener to register
-         */
-        public abstract void registerOnSubscriptionsChangedListener(
-                SubscriptionManager.OnSubscriptionsChangedListener listener);
+    public SubscriptionInfo getActiveSubscriptionInfo() {
+        try {
+            final SubscriptionInfo subInfo =
+                    mSubscriptionManager.getActiveSubscriptionInfo(mSubId);
+            if (subInfo == null) {
+                if (LogUtil.isLoggable(TAG, LogUtil.DEBUG)) {
+                    // This is possible if the sub id is no longer available.
+                    LogUtil.d(TAG, "PhoneUtils.getActiveSubscriptionInfo(): empty sub info for "
+                            + mSubId);
+                }
+            }
+            return subInfo;
+        } catch (Exception e) {
+            LogUtil.e(TAG, "PhoneUtils.getActiveSubscriptionInfo: system exception for "
+                    + mSubId, e);
+        }
+        return null;
     }
 
     /**
-     * The PhoneUtils class for pre L_MR1
+     * Get the list of active SIMs in system.
+     *
+     * @return the list of subscription info for all inserted SIMs
      */
-    public static class PhoneUtilsPreLMR1 extends PhoneUtils {
-        private final ConnectivityManager mConnectivityManager;
-
-        public PhoneUtilsPreLMR1() {
-            super(ParticipantData.DEFAULT_SELF_SUB_ID);
-            mConnectivityManager =
-                    (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public List<SubscriptionInfo> getActiveSubscriptionInfoList() {
+        final List<SubscriptionInfo> subscriptionInfos =
+                mSubscriptionManager.getActiveSubscriptionInfoList();
+        if (subscriptionInfos != null) {
+            return subscriptionInfos;
         }
-
-        @Override
-        public String getSimCountry() {
-            final String country = mTelephonyManager.getSimCountryIso();
-            if (TextUtils.isEmpty(country)) {
-                return null;
-            }
-            return country.toUpperCase();
-        }
-
-        @Override
-        public int getSimSlotCount() {
-            // Don't support MSIM pre-L_MR1
-            return 1;
-        }
-
-        @Override
-        public String getCarrierName() {
-            return mTelephonyManager.getNetworkOperatorName();
-        }
-
-        @Override
-        public boolean hasSim() {
-            return mTelephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
-        }
-
-        @Override
-        public boolean isRoaming() {
-            return mTelephonyManager.isNetworkRoaming();
-        }
-
-        @Override
-        public int[] getMccMnc() {
-            final String mccmnc = mTelephonyManager.getSimOperator();
-            int mcc = 0;
-            int mnc = 0;
-            try {
-                mcc = Integer.parseInt(mccmnc.substring(0, 3));
-                mnc = Integer.parseInt(mccmnc.substring(3));
-            } catch (Exception e) {
-                LogUtil.w(TAG, "PhoneUtils.getMccMnc: invalid string " + mccmnc, e);
-            }
-            return new int[]{mcc, mnc};
-        }
-
-        @Override
-        public String getSimOperatorNumeric() {
-            return mTelephonyManager.getSimOperator();
-        }
-
-        @Override
-        public String getSelfRawNumber(final boolean allowOverride) {
-            if (allowOverride) {
-                final String userDefinedNumber = getNumberFromPrefs(mContext,
-                        ParticipantData.DEFAULT_SELF_SUB_ID);
-                if (!TextUtils.isEmpty(userDefinedNumber)) {
-                    return userDefinedNumber;
-                }
-            }
-            return mTelephonyManager.getLine1Number();
-        }
-
-        @Override
-        public int getEffectiveSubId(int subId) {
-            Assert.equals(ParticipantData.DEFAULT_SELF_SUB_ID, subId);
-            return ParticipantData.DEFAULT_SELF_SUB_ID;
-        }
-
-        @Override
-        public SmsManager getSmsManager() {
-            return SmsManager.getDefault();
-        }
-
-        @Override
-        public int getDefaultSmsSubscriptionId() {
-            Assert.fail("PhoneUtils.getDefaultSmsSubscriptionId(): not supported before L MR1");
-            return ParticipantData.DEFAULT_SELF_SUB_ID;
-        }
-
-        @Override
-        public boolean getHasPreferredSmsSim() {
-            // SIM selection is not supported pre-L_MR1.
-            return true;
-        }
-
-        @Override
-        public int getActiveSubscriptionCount() {
-            return hasSim() ? 1 : 0;
-        }
-
-        @Override
-        public int getEffectiveIncomingSubIdFromSystem(Intent intent, String extraName) {
-            // Pre-L_MR1 always returns the default id
-            return ParticipantData.DEFAULT_SELF_SUB_ID;
-        }
-
-        @Override
-        public int getSubIdFromTelephony(Cursor cursor, int subIdIndex) {
-            // No subscription_id column before L_MR1
-            return ParticipantData.DEFAULT_SELF_SUB_ID;
-        }
-
-        @Override
-        @SuppressWarnings("deprecation")
-        public boolean isDataRoamingEnabled() {
-            if (BuildCompat.isAtLeastT()) {
-                return mTelephonyManager.isDataRoamingEnabled();
-            }
-            boolean dataRoamingEnabled = false;
-            final ContentResolver cr = mContext.getContentResolver();
-            if (OsUtil.isAtLeastJB_MR1()) {
-                dataRoamingEnabled =
-                        (Settings.Global.getInt(cr, Settings.Global.DATA_ROAMING, 0) != 0);
-            } else {
-                dataRoamingEnabled =
-                        (Settings.System.getInt(cr, Settings.System.DATA_ROAMING, 0) != 0);
-            }
-            return dataRoamingEnabled;
-        }
-
-        @Override
-        public boolean isMobileDataEnabled() {
-            boolean mobileDataEnabled = false;
-            try {
-                final Class cmClass = mConnectivityManager.getClass();
-                final Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
-                method.setAccessible(true); // Make the method callable
-                // get the setting for "mobile data"
-                mobileDataEnabled = (Boolean) method.invoke(mConnectivityManager);
-            } catch (final Exception e) {
-                LogUtil.e(TAG, "PhoneUtil.isMobileDataEnabled: system api not found", e);
-            }
-            return mobileDataEnabled;
-        }
-
-        @Override
-        public HashSet<String> getNormalizedSelfNumbers() {
-            final HashSet<String> numbers = new HashSet<>();
-            numbers.add(getCanonicalForSelf(true/*allowOverride*/));
-            return numbers;
-        }
+        return EMPTY_SUBSCRIPTION_LIST;
     }
 
     /**
-     * The PhoneUtils class for L_MR1
+     * Register subscription change listener.
+     *
+     * @param listener The listener to register
      */
-    public static class PhoneUtilsLMR1 extends PhoneUtils implements LMr1 {
-        private final SubscriptionManager mSubscriptionManager;
+    public void registerOnSubscriptionsChangedListener(
+            SubscriptionManager.OnSubscriptionsChangedListener listener) {
+        mSubscriptionManager.addOnSubscriptionsChangedListener(listener);
+    }
 
-        public PhoneUtilsLMR1(final int subId) {
-            super(subId);
-            mSubscriptionManager = SubscriptionManager.from(Factory.get().getApplicationContext());
-        }
-
-        @Override
-        public String getSimCountry() {
-            final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
-            if (subInfo != null) {
-                final String country = subInfo.getCountryIso();
-                if (TextUtils.isEmpty(country)) {
-                    return null;
-                }
-                return country.toUpperCase();
-            }
-            return null;
-        }
-
-        @Override
-        public int getSimSlotCount() {
-            return mSubscriptionManager.getActiveSubscriptionInfoCountMax();
-        }
-
-        @Override
-        public String getCarrierName() {
-            final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
-            if (subInfo != null) {
-                final CharSequence displayName = subInfo.getDisplayName();
-                if (!TextUtils.isEmpty(displayName)) {
-                    return displayName.toString();
-                }
-                final CharSequence carrierName = subInfo.getCarrierName();
-                if (carrierName != null) {
-                    return carrierName.toString();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public boolean hasSim() {
-            return mSubscriptionManager.getActiveSubscriptionInfoCount() > 0;
-        }
-
-        @Override
-        public boolean isRoaming() {
-            return mSubscriptionManager.isNetworkRoaming(mSubId);
-        }
-
-        @Override
-        public int[] getMccMnc() {
-            int mcc = 0;
-            int mnc = 0;
-            final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
-            if (subInfo != null) {
-                mcc = subInfo.getMcc();
-                mnc = subInfo.getMnc();
-            }
-            return new int[]{mcc, mnc};
-        }
-
-        @Override
-        public String getSimOperatorNumeric() {
-            // For L_MR1 we return the canonicalized (xxxxxx) string
-            return getMccMncString(getMccMnc());
-        }
-
-        @Override
-        public String getSelfRawNumber(final boolean allowOverride) {
-            if (allowOverride) {
-                final String userDefinedNumber = getNumberFromPrefs(mContext, mSubId);
-                if (!TextUtils.isEmpty(userDefinedNumber)) {
-                    return userDefinedNumber;
-                }
-            }
-
-            final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
-            if (subInfo != null) {
-                String phoneNumber = subInfo.getNumber();
-                if (TextUtils.isEmpty(phoneNumber) && LogUtil.isLoggable(TAG, LogUtil.DEBUG)) {
-                    LogUtil.d(TAG, "SubscriptionInfo phone number for self is empty!");
-                }
-                return phoneNumber;
-            }
-            LogUtil.w(TAG, "PhoneUtils.getSelfRawNumber: subInfo is null for " + mSubId);
-            throw new IllegalStateException("No active subscription");
-        }
-
-        @Override
-        public SubscriptionInfo getActiveSubscriptionInfo() {
-            try {
-                final SubscriptionInfo subInfo =
-                        mSubscriptionManager.getActiveSubscriptionInfo(mSubId);
-                if (subInfo == null) {
-                    if (LogUtil.isLoggable(TAG, LogUtil.DEBUG)) {
-                        // This is possible if the sub id is no longer available.
-                        LogUtil.d(TAG, "PhoneUtils.getActiveSubscriptionInfo(): empty sub info for "
-                                + mSubId);
-                    }
-                }
-                return subInfo;
-            } catch (Exception e) {
-                LogUtil.e(TAG, "PhoneUtils.getActiveSubscriptionInfo: system exception for "
-                        + mSubId, e);
-            }
-            return null;
-        }
-
-        @Override
-        public List<SubscriptionInfo> getActiveSubscriptionInfoList() {
-            final List<SubscriptionInfo> subscriptionInfos =
-                    mSubscriptionManager.getActiveSubscriptionInfoList();
-            if (subscriptionInfos != null) {
-                return subscriptionInfos;
-            }
-            return EMPTY_SUBSCRIPTION_LIST;
-        }
-
-        @Override
-        public int getEffectiveSubId(int subId) {
-            if (subId == ParticipantData.DEFAULT_SELF_SUB_ID) {
-                return getDefaultSmsSubscriptionId();
-            }
-            return subId;
-        }
-
-        @Override
-        public void registerOnSubscriptionsChangedListener(
-                SubscriptionManager.OnSubscriptionsChangedListener listener) {
-            mSubscriptionManager.addOnSubscriptionsChangedListener(listener);
-        }
-
-        @Override
-        public SmsManager getSmsManager() {
-            return SmsManager.getSmsManagerForSubscriptionId(mSubId);
-        }
-
-        @Override
-        public int getDefaultSmsSubscriptionId() {
-            final int systemDefaultSubId = SmsManager.getDefaultSmsSubscriptionId();
-            if (systemDefaultSubId < 0) {
-                // Always use -1 for any negative subId from system
+    private int getEffectiveIncomingSubIdFromSystem(int subId) {
+        if (subId < 0) {
+            if (mSubscriptionManager.getActiveSubscriptionInfoCount() > 1) {
+                // For multi-SIM device, we can not decide which SIM to use if system
+                // does not know either. So just make it the invalid sub id.
                 return ParticipantData.DEFAULT_SELF_SUB_ID;
             }
-            return systemDefaultSubId;
+            // For single-SIM device, it must come from the only SIM we have
+            return getDefaultSmsSubscriptionId();
         }
-
-        @Override
-        public boolean getHasPreferredSmsSim() {
-            return getDefaultSmsSubscriptionId() != ParticipantData.DEFAULT_SELF_SUB_ID;
-        }
-
-        @Override
-        public int getActiveSubscriptionCount() {
-            return mSubscriptionManager.getActiveSubscriptionInfoCount();
-        }
-
-        @Override
-        public int getEffectiveIncomingSubIdFromSystem(Intent intent, String extraName) {
-            return getEffectiveIncomingSubIdFromSystem(intent.getIntExtra(extraName,
-                    ParticipantData.DEFAULT_SELF_SUB_ID));
-        }
-
-        private int getEffectiveIncomingSubIdFromSystem(int subId) {
-            if (subId < 0) {
-                if (mSubscriptionManager.getActiveSubscriptionInfoCount() > 1) {
-                    // For multi-SIM device, we can not decide which SIM to use if system
-                    // does not know either. So just make it the invalid sub id.
-                    return ParticipantData.DEFAULT_SELF_SUB_ID;
-                }
-                // For single-SIM device, it must come from the only SIM we have
-                return getDefaultSmsSubscriptionId();
-            }
-            return subId;
-        }
-
-        @Override
-        public int getSubIdFromTelephony(Cursor cursor, int subIdIndex) {
-            return getEffectiveIncomingSubIdFromSystem(cursor.getInt(subIdIndex));
-        }
-
-        @Override
-        public boolean isDataRoamingEnabled() {
-            final SubscriptionInfo subInfo = getActiveSubscriptionInfo();
-            if (subInfo == null) {
-                // There is nothing we can do if system give us empty sub info
-                LogUtil.e(TAG, "PhoneUtils.isDataRoamingEnabled: system return empty sub info for "
-                        + mSubId);
-                return false;
-            }
-            return subInfo.getDataRoaming() != SubscriptionManager.DATA_ROAMING_DISABLE;
-        }
-
-        @Override
-        public boolean isMobileDataEnabled() {
-            boolean mobileDataEnabled = false;
-            try {
-                final Class cmClass = mTelephonyManager.getClass();
-                final Method method = cmClass.getDeclaredMethod("getDataEnabled", Integer.TYPE);
-                method.setAccessible(true); // Make the method callable
-                // get the setting for "mobile data"
-                mobileDataEnabled = (Boolean) method.invoke(
-                        mTelephonyManager, Integer.valueOf(mSubId));
-            } catch (final Exception e) {
-                LogUtil.e(TAG, "PhoneUtil.isMobileDataEnabled: system api not found", e);
-            }
-            return mobileDataEnabled;
-
-        }
-
-        @Override
-        public HashSet<String> getNormalizedSelfNumbers() {
-            final HashSet<String> numbers = new HashSet<>();
-            for (SubscriptionInfo info : getActiveSubscriptionInfoList()) {
-                numbers.add(PhoneUtils.get(info.getSubscriptionId()).getCanonicalForSelf(
-                        true/*allowOverride*/));
-            }
-            return numbers;
-        }
+        return subId;
     }
 
     /**
@@ -656,15 +399,6 @@ public abstract class PhoneUtils {
      */
     public static PhoneUtils get(int subId) {
         return Factory.get().getPhoneUtils(subId);
-    }
-
-    public LMr1 toLMr1() {
-        if (OsUtil.isAtLeastL_MR1()) {
-            return (LMr1) this;
-        } else {
-            Assert.fail("PhoneUtils.toLMr1(): invalid OS version");
-            return null;
-        }
     }
 
     /**
@@ -892,15 +626,10 @@ public abstract class PhoneUtils {
 
     /**
      * Is Messaging the default SMS app?
-     * - On KLP+ this checks the system setting.
-     * - On JB (and below) this always returns true, since the setting was added in KLP.
      */
     public boolean isDefaultSmsApp() {
-        if (OsUtil.isAtLeastKLP()) {
-            final String configuredApplication = Telephony.Sms.getDefaultSmsPackage(mContext);
-            return  mContext.getPackageName().equals(configuredApplication);
-        }
-        return true;
+        final String configuredApplication = Telephony.Sms.getDefaultSmsPackage(mContext);
+        return mContext.getPackageName().equals(configuredApplication);
     }
 
     /**
@@ -909,16 +638,13 @@ public abstract class PhoneUtils {
      * @return the package name of default SMS app
      */
     public String getDefaultSmsApp() {
-        if (OsUtil.isAtLeastKLP()) {
-            return Telephony.Sms.getDefaultSmsPackage(mContext);
-        }
-        return null;
+        return Telephony.Sms.getDefaultSmsPackage(mContext);
     }
 
     /**
      * Determines if SMS is currently enabled on this device.
      * - Device must support SMS
-     * - On KLP+ we must be set as the default SMS app
+     * - We must be set as the default SMS app
      */
     public boolean isSmsEnabled() {
         return isSmsCapable() && isDefaultSmsApp();
@@ -926,18 +652,16 @@ public abstract class PhoneUtils {
 
     /**
      * Returns the name of the default SMS app, or the empty string if there is
-     * an error or there is no default app (e.g. JB and below).
+     * an error or there is no default app.
      */
     public String getDefaultSmsAppLabel() {
-        if (OsUtil.isAtLeastKLP()) {
-            final String packageName = Telephony.Sms.getDefaultSmsPackage(mContext);
-            final PackageManager pm = mContext.getPackageManager();
-            try {
-                final ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);
-                return pm.getApplicationLabel(appInfo).toString();
-            } catch (NameNotFoundException e) {
-                // Fall through and return empty string
-            }
+        final String packageName = Telephony.Sms.getDefaultSmsPackage(mContext);
+        final PackageManager pm = mContext.getPackageManager();
+        try {
+            final ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);
+            return pm.getApplicationLabel(appInfo).toString();
+        } catch (NameNotFoundException e) {
+            // Fall through and return empty string
         }
         return "";
     }
@@ -947,27 +671,21 @@ public abstract class PhoneUtils {
      *
      * @return true if enabled.
      */
-    @SuppressWarnings("deprecation")
     public boolean isAirplaneModeOn() {
-        if (OsUtil.isAtLeastJB_MR1()) {
-            return Settings.Global.getInt(mContext.getContentResolver(),
-                    Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-        } else {
-            return Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.AIRPLANE_MODE_ON, 0) != 0;
-        }
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     }
 
     public static String getMccMncString(int[] mccmnc) {
         if (mccmnc == null || mccmnc.length != 2) {
             return "000000";
         }
-        return String.format("%03d%03d", mccmnc[0], mccmnc[1]);
+        return String.format(Locale.ROOT, "%03d%03d", mccmnc[0], mccmnc[1]);
     }
 
     public static String canonicalizeMccMnc(final String mcc, final String mnc) {
         try {
-            return String.format("%03d%03d", Integer.parseInt(mcc), Integer.parseInt(mnc));
+            return String.format(Locale.ROOT, "%03d%03d", Integer.parseInt(mcc), Integer.parseInt(mnc));
         } catch (final NumberFormatException e) {
             // Return invalid as is
             LogUtil.w(TAG, "canonicalizeMccMnc: invalid mccmnc:" + mcc + " ," + mnc);
@@ -993,14 +711,10 @@ public abstract class PhoneUtils {
      * @param runnable a {@link SubscriptionRunnable} for performing work on each subscription.
      */
     public static void forEachActiveSubscription(final SubscriptionRunnable runnable) {
-        if (OsUtil.isAtLeastL_MR1()) {
-            final List<SubscriptionInfo> subscriptionList =
-                    getDefault().toLMr1().getActiveSubscriptionInfoList();
-            for (final SubscriptionInfo subscriptionInfo : subscriptionList) {
-                runnable.runForSubscription(subscriptionInfo.getSubscriptionId());
-            }
-        } else {
-            runnable.runForSubscription(ParticipantData.DEFAULT_SELF_SUB_ID);
+        final List<SubscriptionInfo> subscriptionList =
+                getDefault().getActiveSubscriptionInfoList();
+        for (final SubscriptionInfo subscriptionInfo : subscriptionList) {
+            runnable.runForSubscription(subscriptionInfo.getSubscriptionId());
         }
     }
 

@@ -42,7 +42,6 @@ import com.android.messaging.ui.SnackBar.SnackBarListener;
 import com.android.messaging.util.AccessibilityUtil;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
-import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.TextUtil;
 import com.android.messaging.util.UiUtils;
 import com.google.common.base.Joiner;
@@ -354,22 +353,15 @@ public class SnackBarManager {
     private int getScreenBottomOffset(final SnackBar snackBar) {
         final WindowManager windowManager = getWindowManager(snackBar.getContext());
         final DisplayMetrics displayMetrics = new DisplayMetrics();
-        if (OsUtil.isAtLeastL()) {
-            windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
-        } else {
-            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        }
+        windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
+
         final int screenHeight = displayMetrics.heightPixels;
 
-        if (OsUtil.isAtLeastL()) {
-            // In L, the navigation bar is included in the space for the popup window, so we have to
-            // offset by the size of the navigation bar
-            final Rect displayRect = new Rect();
-            snackBar.getParentView().getRootView().getWindowVisibleDisplayFrame(displayRect);
-            return screenHeight - displayRect.bottom;
-        }
-
-        return 0;
+        // The navigation bar is included in the space for the popup window, so we have to
+        // offset by the size of the navigation bar
+        final Rect displayRect = new Rect();
+        snackBar.getParentView().getRootView().getWindowVisibleDisplayFrame(displayRect);
+        return screenHeight - displayRect.bottom;
     }
 
     private int getRelativeOffset(final SnackBar snackBar) {

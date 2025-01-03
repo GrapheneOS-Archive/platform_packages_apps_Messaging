@@ -32,7 +32,6 @@ import android.graphics.Shader.TileMode;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -52,6 +51,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+
+import androidx.annotation.Nullable;
 
 public class ImageUtils {
     private static final String TAG = LogUtil.BUGLE_TAG;
@@ -172,13 +173,8 @@ public class ImageUtils {
      * Sets a drawable to the background of a view. setBackgroundDrawable() is deprecated since
      * JB and replaced by setBackground().
      */
-    @SuppressWarnings("deprecation")
     public static void setBackgroundDrawableOnView(final View view, final Drawable drawable) {
-        if (OsUtil.isAtLeastJB()) {
-            view.setBackground(drawable);
-        } else {
-            view.setBackgroundDrawable(drawable);
-        }
+        view.setBackground(drawable);
     }
 
     /**

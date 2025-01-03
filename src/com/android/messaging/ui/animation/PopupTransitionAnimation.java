@@ -16,8 +16,8 @@
 
 package com.android.messaging.ui.animation;
 
+import android.animation.RectEvaluator;
 import android.animation.TypeEvaluator;
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -81,7 +81,7 @@ public class PopupTransitionAnimation extends Animation {
         mActionBarRect = new Rect();
         mActionBarView = viewToAnimate.getRootView().findViewById(
                 androidx.appcompat.R.id.action_bar);
-        mRectEvaluator = RectEvaluatorCompat.create();
+        mRectEvaluator = new RectEvaluator();
         setDuration(UiUtils.MEDIAPICKER_TRANSITION_DURATION);
         setInterpolator(UiUtils.DEFAULT_INTERPOLATOR);
         setAnimationListener(new AnimationListener() {
