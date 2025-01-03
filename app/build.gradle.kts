@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -34,13 +37,6 @@ android {
         }
     }
 
-    buildTypes {
-        getByName("debug") {
-            applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Messaging d")
-        }
-    }
-
     buildFeatures {
         buildConfig = true
     }
@@ -50,6 +46,42 @@ android {
         manifest.srcFile("../AndroidManifest.xml")
         java.srcDirs("../src")
         res.srcDir("../res")
+    }
+
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val useKeystoreProperties = keystorePropertiesFile.canRead()
+    val keystoreProperties = Properties()
+    if (useKeystoreProperties) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
+    if (useKeystoreProperties) {
+        signingConfigs {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties["storeFile"]!!)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                enableV4Signing = true
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"),
+                    "../proguard.flags", "../proguard-release.flags")
+            if (useKeystoreProperties) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "Messaging d")
+        }
     }
 }
 
