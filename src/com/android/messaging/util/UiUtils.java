@@ -337,7 +337,7 @@ public class UiUtils {
                 phoneUtils.isDefaultSmsApp();
     }
 
-    /*
+    /**
      * Removes all html markup from the text and replaces links with the the text and a text version
      * of the href.
      * @param htmlText HTML markup text
