@@ -27,25 +27,21 @@
     <item
         android:id="@+id/action_show_archived"
         android:orderInCategory="200"
-        android:title="@string/action_menu_show_archived"
-        android:showAsAction="never"/>
+        android:title="@string/action_menu_show_archived" />
 
     <item
         android:id="@+id/action_show_blocked_contacts"
         android:orderInCategory="300"
-        android:title="@string/blocked_contacts_title"
-        appcompat:showAsAction="never"/>
+        android:title="@string/blocked_contacts_title" />
 
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="400"
-        android:title="@string/action_settings"
-        appcompat:showAsAction="never"/>
+        android:title="@string/action_settings" />
 
     <item
         android:id="@+id/action_debug_options"
         android:orderInCategory="9900"
-        android:title="@string/action_debug_options"
-        appcompat:showAsAction="never"/>
+        android:title="@string/action_debug_options" />
 
 </menu>

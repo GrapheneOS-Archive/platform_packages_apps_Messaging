@@ -30,8 +30,7 @@
         android:id="@+id/action_add_contact"
         android:icon="@drawable/ic_person_add_light"
         android:orderInCategory="90"
-        android:title="@string/action_add_contact"
-        android:showAsAction="never"/>
+        android:title="@string/action_add_contact" />
 
     <item
         android:id="@+id/action_people_and_options"
@@ -42,19 +41,16 @@
     <item
         android:id="@+id/action_archive"
         android:orderInCategory="120"
-        android:title="@string/action_archive"
-        android:showAsAction="never"/>
+        android:title="@string/action_archive" />
 
     <item
         android:id="@+id/action_unarchive"
         android:orderInCategory="130"
-        android:title="@string/action_unarchive"
-        android:showAsAction="never"/>
+        android:title="@string/action_unarchive" />
 
     <item
         android:id="@+id/action_delete"
         android:orderInCategory="140"
-        android:title="@string/action_delete"
-        android:showAsAction="never"/>
+        android:title="@string/action_delete" />
 
 </menu>
