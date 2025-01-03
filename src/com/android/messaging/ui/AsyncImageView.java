@@ -25,7 +25,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import android.support.rastermill.FrameSequenceDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -45,6 +44,7 @@ import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.ThreadUtil;
 import com.android.messaging.util.UiUtils;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.util.HashSet;
@@ -194,8 +194,8 @@ public class AsyncImageView extends ImageView implements MediaResourceLoadListen
             mImageResource = resource;
             mImageResource.addRef();
             setImageDrawable(drawable);
-            if (drawable instanceof FrameSequenceDrawable) {
-                ((FrameSequenceDrawable) drawable).start();
+            if (drawable instanceof GifDrawable) {
+                ((GifDrawable) drawable).start();
             }
 
             if (getVisibility() == VISIBLE) {
@@ -249,9 +249,8 @@ public class AsyncImageView extends ImageView implements MediaResourceLoadListen
 
     private void releaseImageResource() {
         final Drawable drawable = getDrawable();
-        if (drawable instanceof FrameSequenceDrawable) {
-            ((FrameSequenceDrawable) drawable).stop();
-            ((FrameSequenceDrawable) drawable).destroy();
+        if (drawable instanceof GifDrawable) {
+            ((GifDrawable) drawable).stop();
         }
         if (mImageResource != null) {
             mImageResource.release();
@@ -259,6 +258,12 @@ public class AsyncImageView extends ImageView implements MediaResourceLoadListen
         }
         setImageDrawable(null);
         setBackground(null);
+
+        // Must be recycled after the GifDrawable is removed from the ImageView
+        // Otherwise, we'll get an exception
+        if (drawable instanceof GifDrawable) {
+            ((GifDrawable) drawable).recycle();
+        }
     }
 
     /**

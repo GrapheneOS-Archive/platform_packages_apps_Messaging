@@ -110,12 +110,7 @@ public abstract class ImageRequest<D extends ImageRequestDescriptor>
     protected ImageResource loadMediaInternal(List<MediaRequest<ImageResource>> chainedTask)
             throws IOException {
         if (!mDescriptor.isStatic() && isGif()) {
-            final GifImageResource gifImageResource =
-                    GifImageResource.createGifImageResource(getKey(), getInputStreamForResource());
-            if (gifImageResource == null) {
-                throw new RuntimeException("Error decoding gif");
-            }
-            return gifImageResource;
+            return GifImageResource.createGifImageResource(mContext, getKey(), getInputStreamForResource());
         } else {
             final Bitmap loadedBitmap = loadBitmapInternal();
             if (loadedBitmap == null) {

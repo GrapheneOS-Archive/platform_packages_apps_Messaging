@@ -15,49 +15,46 @@
  */
 package com.android.messaging.datamodel.media;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
-import android.support.rastermill.FrameSequence;
-import android.support.rastermill.FrameSequenceDrawable;
 
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
 
 public class GifImageResource extends ImageResource {
-    private FrameSequence mFrameSequence;
+    private GifDrawable mGifDrawable;
 
-    public GifImageResource(String key, FrameSequence frameSequence) {
+    public GifImageResource(String key, GifDrawable gifRequest) {
         // GIF does not support exif tags
         super(key, ExifInterface.ORIENTATION_NORMAL);
-        mFrameSequence = frameSequence;
+        mGifDrawable = gifRequest;
     }
 
-    public static GifImageResource createGifImageResource(String key, InputStream inputStream) {
-        final FrameSequence frameSequence;
+    public static GifImageResource createGifImageResource(Context context, String key, InputStream inputStream) {
+        GifDrawable gifDrawable = null;
         try {
-            frameSequence = FrameSequence.decodeStream(inputStream);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                // Nothing to do if we fail closing the stream
-            }
+            byte[] gifData = inputStream.readAllBytes();
+            gifDrawable = Glide.with(context).asGif().load(gifData).submit().get();
+        } catch (IOException | ExecutionException | InterruptedException e) {
+            // Nothing to do if we fail getting the drawable
         }
-        if (frameSequence == null) {
-            return null;
-        }
-        return new GifImageResource(key, frameSequence);
+        return new GifImageResource(key, gifDrawable);
     }
 
     @Override
     public Drawable getDrawable(Resources resources) {
         try {
-            return new FrameSequenceDrawable(mFrameSequence);
+            return mGifDrawable.getCurrent();
         } catch (final Throwable t) {
             // Malicious gif images can make the platform throw different kind of throwables, such
             // as OutOfMemoryError and NullPointerException. Catch them all.
@@ -107,8 +104,8 @@ public class GifImageResource extends ImageResource {
     protected void close() {
         acquireLock();
         try {
-            if (mFrameSequence != null) {
-                mFrameSequence = null;
+            if (mGifDrawable != null) {
+                mGifDrawable = null;
             }
         } finally {
             releaseLock();

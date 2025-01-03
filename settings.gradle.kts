@@ -15,7 +15,6 @@ dependencyResolutionManagement {
 include(":app")
 include(":lib:platform_external_libphonenumber")
 include(":lib:platform_frameworks_ex:common")
-include(":lib:platform_frameworks_ex:framesequence")
 include(":lib:platform_frameworks_opt_chips")
 include(":lib:platform_frameworks_opt_colorpicker")
 include(":lib:platform_frameworks_opt_photoviewer")

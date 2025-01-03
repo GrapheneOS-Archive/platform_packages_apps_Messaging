@@ -74,7 +74,6 @@ android_app {
         "libphotoviewer",
         "androidx.annotation_annotation",
         "android-common",
-        "android-common-framesequence",
         "com.android.vcard",
         "guava",
         "libphonenumber",
@@ -87,7 +86,6 @@ android_app {
         "10001040",
     ],
     required: [
-        "libframesequence",
         "libgiftranscode",
         "allowlist_com.android.messaging.xml",
     ],

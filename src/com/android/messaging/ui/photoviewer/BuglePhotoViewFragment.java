@@ -17,12 +17,12 @@ package com.android.messaging.ui.photoviewer;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.rastermill.FrameSequenceDrawable;
 import androidx.loader.content.Loader;
 
 import com.android.ex.photo.PhotoViewCallbacks;
 import com.android.ex.photo.fragments.PhotoViewFragment;
 import com.android.ex.photo.loaders.PhotoBitmapLoaderInterface.BitmapResult;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 
 public class BuglePhotoViewFragment extends PhotoViewFragment {
 
@@ -75,15 +75,15 @@ public class BuglePhotoViewFragment extends PhotoViewFragment {
 
     private void stopGif() {
         final Drawable drawable = getDrawable();
-        if (drawable != null && drawable instanceof FrameSequenceDrawable) {
-            ((FrameSequenceDrawable) drawable).stop();
+        if (drawable != null && drawable instanceof GifDrawable) {
+            ((GifDrawable) drawable).stop();
         }
     }
 
     private void startGif() {
         final Drawable drawable = getDrawable();
-        if (drawable != null && drawable instanceof FrameSequenceDrawable) {
-            ((FrameSequenceDrawable) drawable).start();
+        if (drawable != null && drawable instanceof GifDrawable) {
+            ((GifDrawable) drawable).start();
         }
     }
 }

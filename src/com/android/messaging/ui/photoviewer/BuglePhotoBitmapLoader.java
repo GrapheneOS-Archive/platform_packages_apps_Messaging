@@ -18,7 +18,6 @@ package com.android.messaging.ui.photoviewer;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.rastermill.FrameSequenceDrawable;
 import androidx.loader.content.AsyncTaskLoader;
 
 import com.android.ex.photo.PhotoViewController;
@@ -30,6 +29,7 @@ import com.android.messaging.datamodel.media.MediaRequest;
 import com.android.messaging.datamodel.media.MediaResourceManager;
 import com.android.messaging.datamodel.media.UriImageRequestDescriptor;
 import com.android.messaging.util.ImageUtils;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 
 /**
  * Loader for the bitmap of a photo.
@@ -161,9 +161,8 @@ public class BuglePhotoBitmapLoader extends AsyncTaskLoader<BitmapResult>
     }
 
     private void releaseDrawable(Drawable drawable) {
-        if (drawable != null && drawable instanceof FrameSequenceDrawable
-                && !((FrameSequenceDrawable) drawable).isDestroyed()) {
-            ((FrameSequenceDrawable) drawable).destroy();
+        if (drawable != null && drawable instanceof GifDrawable) {
+            ((GifDrawable) drawable).recycle();
         }
 
     }
