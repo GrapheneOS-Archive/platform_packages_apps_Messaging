@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="@string/debug_sub_id_spinner_text" />
         <Spinner
-            android:id="@+id/sim_selector"
+            android:id="@+id/sim_selector_debug"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content" />

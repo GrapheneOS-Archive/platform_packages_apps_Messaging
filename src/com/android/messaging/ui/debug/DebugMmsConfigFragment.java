@@ -49,7 +49,7 @@ public class DebugMmsConfigFragment extends Fragment {
         final View fragmentView = inflater.inflate(R.layout.mms_config_debug_fragment, container,
                 false);
         final ListView listView = (ListView) fragmentView.findViewById(android.R.id.list);
-        final Spinner spinner = (Spinner) fragmentView.findViewById(R.id.sim_selector);
+        final Spinner spinner = (Spinner) fragmentView.findViewById(R.id.sim_selector_debug);
         final Integer[] subIdArray = getActiveSubIds();
         ArrayAdapter<Integer> spinnerAdapter = new ArrayAdapter<Integer>(getActivity(),
                 android.R.layout.simple_spinner_item, subIdArray);
