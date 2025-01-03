@@ -16,6 +16,7 @@
 
 package com.android.messaging.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -364,6 +365,7 @@ public class DebugUtils {
         return data;
     }
 
+    @SuppressLint("SetWorldReadable")
     public static void ensureReadable(final File file) {
         if (file.exists()){
             file.setReadable(true, false);
