@@ -24,8 +24,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.appcompat.mms.CarrierConfigValuesLoader;
-import androidx.appcompat.mms.MmsManager;
 import android.telephony.CarrierConfigManager;
 
 import com.android.messaging.datamodel.DataModel;
@@ -36,7 +34,6 @@ import com.android.messaging.sms.BugleUserAgentInfoLoader;
 import com.android.messaging.sms.MmsConfig;
 import com.android.messaging.ui.ConversationDrawables;
 import com.android.messaging.util.BugleGservices;
-import com.android.messaging.util.BugleGservicesKeys;
 import com.android.messaging.util.BuglePrefs;
 import com.android.messaging.util.BuglePrefsKeys;
 import com.android.messaging.util.DebugUtils;
@@ -49,6 +46,9 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+
+import androidx.appcompat.mms.CarrierConfigValuesLoader;
+import androidx.appcompat.mms.MmsManager;
 
 /**
  * The application object
@@ -145,20 +145,6 @@ public class BugleApplication extends Application implements UncaughtExceptionHa
         MmsManager.setApnSettingsLoader(new BugleApnSettingsLoader(context));
         MmsManager.setCarrierConfigValuesLoader(carrierConfigValuesLoader);
         MmsManager.setUserAgentInfoLoader(new BugleUserAgentInfoLoader(context));
-        MmsManager.setUseWakeLock(true);
-        // If Gservices is configured not to use mms api, force MmsManager to always use
-        // legacy mms sending logic
-        MmsManager.setForceLegacyMms(!bugleGservices.getBoolean(
-                BugleGservicesKeys.USE_MMS_API_IF_PRESENT,
-                BugleGservicesKeys.USE_MMS_API_IF_PRESENT_DEFAULT));
-        bugleGservices.registerForChanges(new Runnable() {
-            @Override
-            public void run() {
-                MmsManager.setForceLegacyMms(!bugleGservices.getBoolean(
-                        BugleGservicesKeys.USE_MMS_API_IF_PRESENT,
-                        BugleGservicesKeys.USE_MMS_API_IF_PRESENT_DEFAULT));
-            }
-        });
     }
 
     public static void updateAppConfig(final Context context) {

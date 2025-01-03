@@ -32,46 +32,8 @@ public class MmsManager {
      */
     public static final int DEFAULT_SUB_ID = -1;
 
-    // Whether to force legacy MMS sending
-    private static volatile boolean sForceLegacyMms = false;
-
     // Cached computed overrides for carrier configuration values
     private static SparseArray<Bundle> sConfigOverridesMap = new SparseArray<>();
-
-    /**
-     * Set the flag about whether to force to use legacy system APIs instead of system MMS API
-     *
-     * @param forceLegacyMms value to set
-     */
-    public static void setForceLegacyMms(boolean forceLegacyMms) {
-        sForceLegacyMms = forceLegacyMms;
-    }
-
-    /**
-     * Set the size of thread pool for request execution.
-     *
-     * Default is 4
-     *
-     * Note: if system MMS API is used, this has no effect
-     *
-     * @param size thread pool size
-     */
-    public static void setThreadPoolSize(int size) {
-        MmsService.setThreadPoolSize(size);
-    }
-
-    /**
-     * Set whether to use wake lock while sending or downloading MMS.
-     *
-     * Default value is true
-     *
-     * Note: if system MMS API is used, this has no effect
-     *
-     * @param useWakeLock true to use wake lock, false otherwise
-     */
-    public static void setUseWakeLock(final boolean useWakeLock) {
-        MmsService.setUseWakeLock(useWakeLock);
-    }
 
     /**
      * Set the optional carrier config values loader
@@ -135,14 +97,10 @@ public class MmsManager {
      */
     public static void sendMultimediaMessage(int subId, Context context, Uri contentUri,
             String locationUrl, PendingIntent sentIntent) {
-        if (shouldUseLegacyMms()) {
-            MmsService.startRequest(context, new SendRequest(locationUrl, contentUri, sentIntent));
-        } else {
-            subId = Utils.getEffectiveSubscriptionId(subId);
-            final SmsManager smsManager = Utils.getSmsManager(subId);
-            smsManager.sendMultimediaMessage(context, contentUri, locationUrl,
-                    getConfigOverrides(subId), sentIntent);
-        }
+        subId = Utils.getEffectiveSubscriptionId(subId);
+        final SmsManager smsManager = Utils.getSmsManager(subId);
+        smsManager.sendMultimediaMessage(context, contentUri, locationUrl,
+                getConfigOverrides(subId), sentIntent);
     }
 
     /**
@@ -157,15 +115,10 @@ public class MmsManager {
      */
     public static void downloadMultimediaMessage(int subId, Context context, String locationUrl,
             Uri contentUri, PendingIntent downloadedIntent) {
-        if (shouldUseLegacyMms()) {
-            MmsService.startRequest(context,
-                    new DownloadRequest(locationUrl, contentUri, downloadedIntent));
-        } else {
-            subId = Utils.getEffectiveSubscriptionId(subId);
-            final SmsManager smsManager = Utils.getSmsManager(subId);
-            smsManager.downloadMultimediaMessage(context, locationUrl, contentUri,
-                    getConfigOverrides(subId), downloadedIntent);
-        }
+        subId = Utils.getEffectiveSubscriptionId(subId);
+        final SmsManager smsManager = Utils.getSmsManager(subId);
+        smsManager.downloadMultimediaMessage(context, locationUrl, contentUri,
+                getConfigOverrides(subId), downloadedIntent);
     }
 
     /**
@@ -174,7 +127,7 @@ public class MmsManager {
      * @return true if forced to use legacy APIs or platform doesn't supports MMS APIs.
      */
     public static boolean shouldUseLegacyMms() {
-        return sForceLegacyMms || !Utils.hasMmsApi();
+        return false;
     }
 
     /**
@@ -186,10 +139,6 @@ public class MmsManager {
      * @return a Bundle containing the overrides
      */
     private static Bundle getConfigOverrides(final int subId) {
-        if (!Utils.hasMmsApi()) {
-            // If MMS API is not present, it is not necessary to compute overrides
-            return null;
-        }
         Bundle overrides = null;
         synchronized (sConfigOverridesMap) {
             overrides = sConfigOverridesMap.get(subId);
@@ -212,22 +161,18 @@ public class MmsManager {
         // Overrides not computed yet
         final CarrierConfigValuesLoader carrierConfigValuesLoader =
                 MmsService.getCarrierConfigValuesLoader();
-        if (carrierConfigValuesLoader != null &&
-                !(carrierConfigValuesLoader instanceof DefaultCarrierConfigValuesLoader)) {
+        if (carrierConfigValuesLoader != null) {
             // Compute the overrides for carrier config values first if the config loader
             // is not the default one.
             final Bundle systemValues = Utils.getSmsManager(subId).getCarrierConfigValues();
             final Bundle callerValues =
                     MmsService.getCarrierConfigValuesLoader().get(subId);
-            if (systemValues != null && callerValues != null) {
+            if (callerValues != null) {
                 computeConfigDelta(systemValues, callerValues, overrides);
-            } else if (systemValues == null && callerValues != null) {
-                overrides.putAll(callerValues);
             }
         }
         final UserAgentInfoLoader userAgentInfoLoader = MmsService.getUserAgentInfoLoader();
-        if (userAgentInfoLoader != null &&
-                !(userAgentInfoLoader instanceof DefaultUserAgentInfoLoader)) {
+        if (userAgentInfoLoader != null) {
             // Also set the user agent and ua prof url via the overrides
             // if the user agent loader is not the default one.
             overrides.putString(UserAgentInfoLoader.CONFIG_USER_AGENT,
