@@ -16,6 +16,5 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:settings="http://schemas.android.com/apk/res/com.android.settings"
-        android:title="@string/apn_settings" android:key="@string/apn_list_pref_key">
-</PreferenceScreen>
+    android:title="@string/apn_settings"
+    android:key="@string/apn_list_pref_key"/>
