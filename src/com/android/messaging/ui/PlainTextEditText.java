@@ -19,7 +19,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.EditText;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 /**
  * We want the EditText used in Conversations to convert text to plain text on paste.  This
@@ -27,7 +28,7 @@ import android.widget.EditText;
  * that we would send e.g. bold or italic formatting, but in the sent message it would just be
  * plain text.
  */
-public class PlainTextEditText extends EditText {
+public class PlainTextEditText extends AppCompatEditText {
     private static final char OBJECT_UNICODE = '\uFFFC';
 
     public PlainTextEditText(final Context context, final AttributeSet attrs) {
