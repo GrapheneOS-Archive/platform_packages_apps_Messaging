@@ -24,7 +24,6 @@ import android.media.ExifInterface;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 
 import java.io.IOException;
@@ -34,10 +33,10 @@ import java.util.concurrent.ExecutionException;
 public class GifImageResource extends ImageResource {
     private GifDrawable mGifDrawable;
 
-    public GifImageResource(String key, GifDrawable gifRequest) {
+    public GifImageResource(String key, GifDrawable gifDrawable) {
         // GIF does not support exif tags
         super(key, ExifInterface.ORIENTATION_NORMAL);
-        mGifDrawable = gifRequest;
+        mGifDrawable = gifDrawable;
     }
 
     public static GifImageResource createGifImageResource(Context context, String key, InputStream inputStream) {
