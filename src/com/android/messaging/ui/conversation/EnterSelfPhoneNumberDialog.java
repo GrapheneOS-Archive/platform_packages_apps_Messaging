@@ -46,7 +46,7 @@ public class EnterSelfPhoneNumberDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         final Context context = getActivity();
-        final LayoutInflater inflater = LayoutInflater.from(context);
+        final LayoutInflater inflater = getLayoutInflater();
         mEditText = (EditText) inflater.inflate(R.layout.enter_phone_number_view, null, false);
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
