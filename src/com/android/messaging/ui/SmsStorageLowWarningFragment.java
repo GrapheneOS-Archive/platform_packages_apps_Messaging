@@ -235,7 +235,7 @@ public class SmsStorageLowWarningFragment extends Fragment {
         private String getConfirmDialogMessage(final int index) {
             switch (index) {
                 case 0:
-                    return getString(R.string.delete_all_media_confirmation, mDurationString);
+                    return getString(R.string.delete_all_media_confirmation);
                 case 1:
                     return getString(R.string.delete_oldest_messages_confirmation, mDurationString);
                 case 2:
