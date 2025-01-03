@@ -18,6 +18,7 @@ package com.android.messaging.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.telephony.SubscriptionManager;
 
 import com.android.messaging.datamodel.ParticipantRefresh;
 
@@ -27,6 +28,8 @@ import com.android.messaging.datamodel.ParticipantRefresh;
 public class DefaultSmsSubscriptionChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-         ParticipantRefresh.refreshSelfParticipants();
+        if (SubscriptionManager.ACTION_DEFAULT_SMS_SUBSCRIPTION_CHANGED.equals(intent.getAction())) {
+            ParticipantRefresh.refreshSelfParticipants();
+        }
     }
 }
