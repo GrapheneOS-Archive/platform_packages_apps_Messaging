@@ -35,6 +35,6 @@ public abstract class MediaUtil {
             final OnCompletionListener completionListener);
 
     public static boolean canAutoAccessIncomingMedia() {
-        return OsUtil.isAtLeastM();
+        return false;
     }
 }
