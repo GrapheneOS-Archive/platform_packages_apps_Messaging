@@ -369,7 +369,7 @@ public class MessageDetailsDialog {
             final String subscriptionName = self.getSubscriptionName();
             if (TextUtils.isEmpty(subscriptionName)) {
                 outString.append(res.getString(R.string.sim_slot_identifier,
-                        self.getDisplaySlotId()));
+                        Integer.toString(self.getDisplaySlotId())));
             } else {
                 outString.append(subscriptionName);
             }

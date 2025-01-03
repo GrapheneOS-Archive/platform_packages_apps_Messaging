@@ -70,7 +70,8 @@ public class SubscriptionListData {
             final String iconIdentifier = String.format(Locale.getDefault(), "%d", slotId);
             final String subscriptionName = selfParticipantData.getSubscriptionName();
             final String displayName = TextUtils.isEmpty(subscriptionName) ?
-                    context.getString(R.string.sim_slot_identifier, slotId) : subscriptionName;
+                    context.getString(R.string.sim_slot_identifier, Integer.toString(slotId)) :
+                    subscriptionName;
             return new SubscriptionListEntry(selfParticipantData.getId(),
                     AvatarUriUtil.createAvatarUri(selfParticipantData, iconIdentifier,
                             false /* selected */, false /* incoming */),
