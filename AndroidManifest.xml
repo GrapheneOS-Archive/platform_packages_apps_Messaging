@@ -58,7 +58,7 @@
 
     <application
         android:name="com.android.messaging.BugleApplication"
-        android:allowBackup="false"
+        android:dataExtractionRules="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:appCategory="social"
