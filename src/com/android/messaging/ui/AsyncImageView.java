@@ -24,10 +24,8 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.android.messaging.R;
 import com.android.messaging.datamodel.binding.Binding;
@@ -49,10 +47,13 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.util.HashSet;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+
 /**
  * An ImageView used to asynchronously request an image from MediaResourceManager and render it.
  */
-public class AsyncImageView extends ImageView implements MediaResourceLoadListener<ImageResource> {
+public class AsyncImageView extends AppCompatImageView implements MediaResourceLoadListener<ImageResource> {
     private static final String TAG = LogUtil.BUGLE_DATAMODEL_TAG;
     // 100ms delay before disposing the image in case the AsyncImageView is re-added to the UI
     private static final int DISPOSE_IMAGE_DELAY = 100;
