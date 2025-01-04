@@ -34,9 +34,6 @@ import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Intents;
 import android.provider.MediaStore;
 import android.provider.Telephony;
-import androidx.annotation.Nullable;
-import androidx.core.app.TaskStackBuilder;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.android.ex.photo.Intents.PhotoViewIntentBuilder;
@@ -49,8 +46,6 @@ import com.android.messaging.datamodel.data.MessagePartData;
 import com.android.messaging.datamodel.data.ParticipantData;
 import com.android.messaging.receiver.NotificationReceiver;
 import com.android.messaging.sms.MmsSmsUtils;
-import com.android.messaging.ui.appsettings.ApnEditorActivity;
-import com.android.messaging.ui.appsettings.ApnSettingsActivity;
 import com.android.messaging.ui.appsettings.ApplicationSettingsActivity;
 import com.android.messaging.ui.appsettings.PerSubscriptionSettingsActivity;
 import com.android.messaging.ui.appsettings.SettingsActivity;
@@ -69,6 +64,10 @@ import com.android.messaging.util.ConversationIdSet;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.UiUtils;
 import com.android.messaging.util.UriUtil;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.TaskStackBuilder;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * A central repository of Intents used to start activities.
@@ -483,21 +482,6 @@ public class UIIntentsImpl extends UIIntents {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setComponent(new ComponentName(CMAS_COMPONENT, CELL_BROADCAST_LIST_ACTIVITY));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
-    }
-
-    @Override
-    public Intent getApnEditorIntent(final Context context, final String rowId, final int subId) {
-        final Intent intent = new Intent(context, ApnEditorActivity.class);
-        intent.putExtra(UI_INTENT_EXTRA_APN_ROW_ID, rowId);
-        intent.putExtra(UI_INTENT_EXTRA_SUB_ID, subId);
-        return intent;
-    }
-
-    @Override
-    public Intent getApnSettingsIntent(final Context context, final int subId) {
-        final Intent intent = new Intent(context, ApnSettingsActivity.class)
-                .putExtra(UI_INTENT_EXTRA_SUB_ID, subId);
         return intent;
     }
 

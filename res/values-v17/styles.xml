@@ -65,11 +65,6 @@
         <item name="android:paddingEnd">16dp</item>
     </style>
 
-    <style name="ApnPreferenceLayoutStyle">
-        <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
-        <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
-    </style>
-
     <style name="CopyContactDialogTextStyle">
         <item name="android:paddingStart">@dimen/copy_contact_dialog_left_padding</item>
         <item name="android:paddingEnd">@dimen/copy_contact_dialog_right_padding</item>

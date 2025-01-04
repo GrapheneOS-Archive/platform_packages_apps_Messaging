@@ -28,8 +28,6 @@ import android.telephony.CarrierConfigManager;
 
 import com.android.messaging.datamodel.DataModel;
 import com.android.messaging.receiver.SmsReceiver;
-import com.android.messaging.sms.ApnDatabase;
-import com.android.messaging.sms.BugleApnSettingsLoader;
 import com.android.messaging.sms.BugleUserAgentInfoLoader;
 import com.android.messaging.sms.MmsConfig;
 import com.android.messaging.ui.ConversationDrawables;
@@ -116,8 +114,6 @@ public class BugleApplication extends Application implements UncaughtExceptionHa
 
         // Initialize MMS lib
         initMmsLib(context, bugleGservices, carrierConfigValuesLoader);
-        // Initialize APN database
-        ApnDatabase.initializeAppContext(context);
         // Fixup messages in flight if we crashed and send any pending
         dataModel.onApplicationCreated();
         // Register carrier config change receiver
@@ -139,7 +135,6 @@ public class BugleApplication extends Application implements UncaughtExceptionHa
 
     private static void initMmsLib(final Context context, final BugleGservices bugleGservices,
             final CarrierConfigValuesLoader carrierConfigValuesLoader) {
-        MmsManager.setApnSettingsLoader(new BugleApnSettingsLoader(context));
         MmsManager.setCarrierConfigValuesLoader(carrierConfigValuesLoader);
         MmsManager.setUserAgentInfoLoader(new BugleUserAgentInfoLoader(context));
     }

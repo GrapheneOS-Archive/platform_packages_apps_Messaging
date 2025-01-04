@@ -80,7 +80,6 @@ public class ProcessDownloadedMmsAction extends Action {
     private static final String KEY_RECEIVED_TIMESTAMP = "received_timestamp";
     private static final String KEY_EXPIRY = "expiry";
 
-    // Set when message downloaded by us (legacy)
     private static final String KEY_STATUS = "status";
     private static final String KEY_RAW_STATUS = "raw_status";
     private static final String KEY_MMS_URI = "mms_uri";

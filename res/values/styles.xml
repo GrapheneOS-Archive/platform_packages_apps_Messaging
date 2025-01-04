@@ -37,7 +37,6 @@
          <item name="colorAccent">@color/action_bar_background_color</item>
          <item name="android:textColorHighlight">@color/text_highlight_color</item>
          <item name="actionBarStyle">@style/BugleActionBar</item>
-         <item name="apnPreferenceStyle">@style/ApnPreference</item>
          <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
@@ -475,15 +474,6 @@
 
     <style name="ColorAccentGrayOverrideStyle">
         <item name="colorAccent">@color/search_view_text_cursor</item>
-    </style>
-
-    <style name="ApnPreference">
-        <item name="android:layout">@layout/apn_preference_layout</item>
-    </style>
-
-    <style name="ApnPreferenceLayoutStyle">
-        <item name="android:paddingLeft">?android:attr/listPreferredItemPaddingStart</item>
-        <item name="android:paddingRight">?android:attr/listPreferredItemPaddingEnd</item>
     </style>
 
     <style name="SettingsListItem">
