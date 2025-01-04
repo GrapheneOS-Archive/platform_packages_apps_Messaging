@@ -17,23 +17,32 @@
 <!-- Preference screen definition for Bugle's application-wide settings -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--  KLP+ only -->
     <PreferenceScreen
         android:key="@string/sms_disabled_pref_key"
         android:title="@string/sms_disabled_pref_title"
-        android:persistent="false" />
+        android:persistent="false">
+        <intent
+            android:action="android.provider.Telephony.ACTION_CHANGE_DEFAULT">
+            <extra android:name="package" android:value="com.android.messaging" />
+        </intent>
+    </PreferenceScreen>
+
     <PreferenceScreen
         android:key="@string/sms_enabled_pref_key"
         android:title="@string/sms_enabled_pref_title"
-        android:persistent="false" />
+        android:persistent="false">
+        <intent
+            android:action="android.provider.Telephony.ACTION_CHANGE_DEFAULT">
+        </intent>
+    </PreferenceScreen>
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/send_sound_pref_key"
         android:title="@string/send_sound_pref_title"
         android:defaultValue="@bool/send_sound_pref_default"
         android:persistent="true" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/notifications_enabled_pref_key"
         android:title="@string/notifications_enabled_pref_title"
         android:defaultValue="@bool/notifications_enabled_pref_default"
@@ -50,7 +59,7 @@
         android:defaultValue=""
         android:dependency="@string/notifications_enabled_pref_key" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/notification_vibration_pref_key"
         android:title="@string/notification_vibrate_pref_title"
         android:defaultValue="@bool/notification_vibration_pref_default"
@@ -65,13 +74,13 @@
         android:key="@string/debug_pref_key"
         android:title="@string/debug_category_pref_title">
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="@string/dump_sms_pref_key"
             android:title="@string/dump_sms_pref_title"
             android:summary="@string/dump_sms_pref_summary"
             android:defaultValue="@bool/dump_sms_pref_default" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="@string/dump_mms_pref_key"
             android:title="@string/dump_mms_pref_title"
             android:summary="@string/dump_mms_pref_summary"
