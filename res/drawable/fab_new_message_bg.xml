@@ -14,32 +14,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/fab_ripple" >
+
     <item>
-        <bitmap
-            android:src="@drawable/fab_new_message_static_shadow" />
+        <shape android:shape="oval">
+            <solid android:color="@color/fab_color" />
+        </shape>
     </item>
-    <item
-        android:left="2dp"
-        android:right="2dp"
-        android:bottom="@dimen/fab_padding_bottom">
-        <selector>
-            <item
-                android:state_pressed="true">
-                <shape
-                    android:shape="oval" >
-                    <solid
-                        android:color="@color/fab_pressed_color" />
-                </shape>
-            </item>
-            <item>
-                <shape
-                    android:shape="oval" >
-                    <solid
-                        android:color="@color/fab_color" />
-                </shape>
-            </item>
-        </selector>
-    </item>
-</layer-list>
+
+</ripple>

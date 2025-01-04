@@ -29,13 +29,13 @@
             android:key="@string/mms_phone_number_pref_key"
             android:title="@string/mms_phone_number_pref_title" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="@string/auto_retrieve_mms_pref_key"
             android:title="@string/auto_retrieve_mms_pref_title"
             android:summary="@string/auto_retrieve_mms_pref_summary"
             android:defaultValue="@bool/auto_retrieve_mms_pref_default" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="@string/auto_retrieve_mms_when_roaming_pref_key"
             android:dependency="@string/auto_retrieve_mms_pref_key"
             android:title="@string/auto_retrieve_mms_when_roaming_pref_title"
@@ -48,7 +48,7 @@
         android:key="@string/advanced_category_pref_key"
         android:title="@string/advanced_category_pref_title">
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="@string/delivery_reports_pref_key"
             android:title="@string/delivery_reports_pref_title"
             android:summary="@string/delivery_reports_pref_summary"
