@@ -102,7 +102,7 @@ public class DatabaseMessages {
 
         public static String[] getProjection() {
             if (sProjection == null) {
-                String[] projection = new String[] {
+                sProjection = new String[] {
                         Sms._ID,
                         Sms.TYPE,
                         Sms.ADDRESS,
@@ -115,10 +115,6 @@ public class DatabaseMessages {
                         Sms.DATE_SENT,
                         Sms.SUBSCRIPTION_ID,
                     };
-                if (!MmsUtils.hasSmsDateSentColumn()) {
-                    projection[INDEX_DATE_SENT] = Sms.DATE;
-                }
-                sProjection = projection;
             }
 
             return sProjection;
@@ -150,7 +146,6 @@ public class DatabaseMessages {
             mAddress = cursor.getString(INDEX_ADDRESS);
             mBody = cursor.getString(INDEX_BODY);
             mTimestampInMillis = cursor.getLong(INDEX_DATE);
-            // Before ICS, there is no "date_sent" so use copy of "date" value
             mTimestampSentInMillis = cursor.getLong(INDEX_DATE_SENT);
             mType = cursor.getInt(INDEX_TYPE);
             mThreadId = cursor.getLong(INDEX_THREAD_ID);
