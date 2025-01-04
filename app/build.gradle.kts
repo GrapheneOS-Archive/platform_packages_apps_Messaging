@@ -91,10 +91,10 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.palette:palette:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("com.google.guava:guava:33.4.0-android")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.google.guava:guava:33.4.0-android")
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.52")
 
-    implementation(project(":lib:platform_external_libphonenumber"))
     implementation(project(":lib:platform_frameworks_ex:common"))
     implementation(project(":lib:platform_frameworks_opt_chips"))
     implementation(project(":lib:platform_frameworks_opt_colorpicker"))
