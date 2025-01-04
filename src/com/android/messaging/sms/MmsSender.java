@@ -164,7 +164,7 @@ public class MmsSender {
                 context,
                 0 /*request code*/,
                 sentIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         // Send the message
         MmsManager.sendMultimediaMessage(subId, context, contentUri, locationUrl,
