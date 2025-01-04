@@ -16,6 +16,7 @@
 
 package com.android.messaging.ui.mediapicker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.hardware.Camera;
@@ -39,6 +40,7 @@ public class CameraMediaChooserView extends FrameLayout implements PersistentIns
         super(context, attrs);
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected Parcelable onSaveInstanceState() {
         final Bundle bundle = new Bundle();
@@ -46,6 +48,7 @@ public class CameraMediaChooserView extends FrameLayout implements PersistentIns
         return bundle;
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onRestoreInstanceState(final Parcelable state) {
         if (!(state instanceof Bundle)) {
