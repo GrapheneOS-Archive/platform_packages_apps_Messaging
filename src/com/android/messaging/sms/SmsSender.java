@@ -267,7 +267,8 @@ public class SmsSender {
                         partId,
                         getSendStatusIntent(context, SendStatusReceiver.MESSAGE_DELIVERED_ACTION,
                                 messageUri, partId, subId),
-                        PendingIntent.FLAG_IMMUTABLE));
+                        // FLAG_MUTABLE is required because OS returns extra data via fill-in intent
+                        PendingIntent.FLAG_MUTABLE));
             } else {
                 deliveryIntents.add(null);
             }
@@ -276,7 +277,8 @@ public class SmsSender {
                     partId,
                     getSendStatusIntent(context, SendStatusReceiver.MESSAGE_SENT_ACTION,
                             messageUri, partId, subId),
-                    PendingIntent.FLAG_IMMUTABLE));
+                    // FLAG_MUTABLE is required because OS returns extra data via fill-in intent
+                    PendingIntent.FLAG_MUTABLE));
         }
         try {
             if (MmsConfig.get(subId).getSendMultipartSmsAsSeparateMessages()) {
