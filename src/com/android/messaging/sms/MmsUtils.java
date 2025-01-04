@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -1024,10 +1023,7 @@ public class MmsUtils {
 
         values.put(Sms.ADDRESS, sms.getDisplayOriginatingAddress());
         values.put(Sms.BODY, buildMessageBodyFromPdus(msgs));
-        if (MmsUtils.hasSmsDateSentColumn()) {
-            // TODO:: The boxing here seems unnecessary.
-            values.put(Sms.DATE_SENT, Long.valueOf(sms.getTimestampMillis()));
-        }
+        values.put(Sms.DATE_SENT, sms.getTimestampMillis());
         values.put(Sms.PROTOCOL, sms.getProtocolIdentifier());
         if (sms.getPseudoSubject().length() > 0) {
             values.put(Sms.SUBJECT, sms.getPseudoSubject());
@@ -1167,9 +1163,8 @@ public class MmsUtils {
         }
         final ContentValues values = new ContentValues();
         values.put(Sms.STATUS, status);
-        if (MmsUtils.hasSmsDateSentColumn()) {
-            values.put(Sms.DATE_SENT, timeSentInMillis);
-        }
+        values.put(Sms.DATE_SENT, timeSentInMillis);
+
         final ContentResolver resolver = Factory.get().getApplicationContext().getContentResolver();
         resolver.update(smsMessageUri, values, null/*where*/, null/*selectionArgs*/);
     }
@@ -1434,42 +1429,6 @@ public class MmsUtils {
             LogUtil.e(TAG, "MmsUtils.stringToBytes: " + e, e);
             return string.getBytes();
         }
-    }
-
-    private static final String[] TEST_DATE_SENT_PROJECTION = new String[] { Sms.DATE_SENT };
-    private static Boolean sHasSmsDateSentColumn = null;
-    /**
-     * Check if date_sent column exists on ICS and above devices. We need to do a test
-     * query to figure that out since on some ICS+ devices, somehow the date_sent column does
-     * not exist. http://b/17629135 tracks the associated compliance test.
-     *
-     * @return Whether "date_sent" column exists in sms table
-     */
-    public static boolean hasSmsDateSentColumn() {
-        if (sHasSmsDateSentColumn == null) {
-            Cursor cursor = null;
-            try {
-                final Context context = Factory.get().getApplicationContext();
-                final ContentResolver resolver = context.getContentResolver();
-                cursor = SqliteWrapper.query(
-                        context,
-                        resolver,
-                        Sms.CONTENT_URI,
-                        TEST_DATE_SENT_PROJECTION,
-                        null/*selection*/,
-                        null/*selectionArgs*/,
-                        Sms.DATE_SENT + " ASC LIMIT 1");
-                sHasSmsDateSentColumn = true;
-            } catch (final SQLiteException e) {
-                LogUtil.w(TAG, "date_sent in sms table does not exist", e);
-                sHasSmsDateSentColumn = false;
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-        return sHasSmsDateSentColumn;
     }
 
     /**
