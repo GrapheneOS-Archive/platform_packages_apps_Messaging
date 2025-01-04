@@ -41,7 +41,6 @@ public class CameraMediaChooserView extends FrameLayout implements PersistentIns
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        super.onSaveInstanceState();
         final Bundle bundle = new Bundle();
         bundle.putInt(KEY_CAMERA_INDEX, CameraManager.get().getCameraIndex());
         return bundle;
@@ -49,7 +48,6 @@ public class CameraMediaChooserView extends FrameLayout implements PersistentIns
 
     @Override
     protected void onRestoreInstanceState(final Parcelable state) {
-        super.onRestoreInstanceState(state);
         if (!(state instanceof Bundle)) {
             return;
         }
