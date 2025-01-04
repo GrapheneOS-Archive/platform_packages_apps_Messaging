@@ -24,13 +24,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import androidx.core.app.JobIntentService;
-
 import com.android.messaging.Factory;
 import com.android.messaging.datamodel.DataModel;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.LoggingTimer;
 import com.google.common.annotations.VisibleForTesting;
+
+import androidx.core.app.JobIntentService;
 
 /**
  * ActionService used to perform background processing for data model
@@ -165,7 +165,8 @@ public class ActionServiceImpl extends JobIntentService {
                 final long delayMs) {
             final Context context = Factory.get().getApplicationContext();
             final PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                    // FLAG_MUTABLE is required because OS returns extra data via fill-in intent
+                    context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
 
             final AlarmManager mgr =
                     (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

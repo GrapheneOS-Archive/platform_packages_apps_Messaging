@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.mms.MmsManager;
 import android.telephony.SmsManager;
 
 import com.android.messaging.datamodel.MmsFileProvider;
@@ -47,6 +46,8 @@ import com.android.messaging.util.PhoneUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import androidx.appcompat.mms.MmsManager;
 
 /**
  * Class that sends chat message via MMS.
@@ -262,7 +263,8 @@ public class MmsSender {
                 context,
                 0 /*request code*/,
                 downloadedIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                // FLAG_MUTABLE is required because OS returns extra data via fill-in intent
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         MmsManager.downloadMultimediaMessage(subId, context, contentLocation, contentUri,
                 downloadedPendingIntent);
