@@ -57,5 +57,4 @@
             <enum name="subcompact" value="2" />
         </attr>
     </declare-styleable>
-    <attr name="apnPreferenceStyle" format="reference" />
 </resources>

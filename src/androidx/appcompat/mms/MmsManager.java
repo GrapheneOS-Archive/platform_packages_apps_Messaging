@@ -38,8 +38,7 @@ public class MmsManager {
     /**
      * Set the optional carrier config values loader
      *
-     * Note: if system MMS API is used, this is used to compute the overrides
-     * of carrier configuration values
+     * This is used to compute the overrides of carrier configuration values
      *
      * @param loader the carrier config values loader
      */
@@ -54,25 +53,10 @@ public class MmsManager {
     }
 
     /**
-     * Set the optional APN settings loader
-     *
-     * Note: if system MMS API is used, this has no effect
-     *
-     * @param loader the APN settings loader
-     */
-    public static void setApnSettingsLoader(ApnSettingsLoader loader) {
-        if (loader == null) {
-            throw new IllegalArgumentException("APN settings loader can not be empty");
-        }
-        MmsService.setApnSettingsLoader(loader);
-    }
-
-    /**
      * Set user agent info loader
      *
-     * Note: if system MMS API is used, this is used to compute the overrides
-     * of carrier configuration values
-
+     * This is used to compute the overrides of carrier configuration values
+     *
      * @param loader the user agent info loader
      */
     public static void setUserAgentInfoLoader(final UserAgentInfoLoader loader) {
@@ -86,8 +70,7 @@ public class MmsManager {
     }
 
     /**
-     * Send MMS via platform MMS API (if platform supports and not forced to
-     * use legacy APIs) or legacy APIs
+     * Send MMS via platform MMS API.
      *
      * @param subId the subscription ID of the SIM to use
      * @param context the Context to use
@@ -104,8 +87,7 @@ public class MmsManager {
     }
 
     /**
-     * Download MMS via platform MMS API (if platform supports and not forced to
-     * use legacy APIs) or legacy APIs
+     * Download MMS via platform MMS API.
      *
      * @param subId the subscription ID of the SIM to use
      * @param context the Context to use
@@ -119,15 +101,6 @@ public class MmsManager {
         final SmsManager smsManager = Utils.getSmsManager(subId);
         smsManager.downloadMultimediaMessage(context, locationUrl, contentUri,
                 getConfigOverrides(subId), downloadedIntent);
-    }
-
-    /**
-     * Checks if we should use legacy APIs for MMS.
-     *
-     * @return true if forced to use legacy APIs or platform doesn't supports MMS APIs.
-     */
-    public static boolean shouldUseLegacyMms() {
-        return false;
     }
 
     /**

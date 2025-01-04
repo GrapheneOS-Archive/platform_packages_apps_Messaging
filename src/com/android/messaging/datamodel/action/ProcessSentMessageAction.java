@@ -69,7 +69,7 @@ public class ProcessSentMessageAction extends Action {
     private static final String KEY_RESPONSE = "response";
     private static final String KEY_RESPONSE_IMPORTANT = "response_important";
 
-    // These are set for messages we sent ourself (legacy), or which we fast-failed before sending.
+    // These are set for messages which we fast-failed before sending.
     private static final String KEY_STATUS = "status";
     private static final String KEY_RAW_STATUS = "raw_status";
 

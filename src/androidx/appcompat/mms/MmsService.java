@@ -25,11 +25,6 @@ public class MmsService {
     private static volatile CarrierConfigValuesLoader sCarrierConfigValuesLoader = null;
 
     /**
-     * APN loader
-     */
-    private static volatile ApnSettingsLoader sApnSettingsLoader = null;
-
-    /**
      * UserAgent and UA Prof URL loader
      */
     private static volatile UserAgentInfoLoader sUserAgentInfoLoader = null;
@@ -50,24 +45,6 @@ public class MmsService {
      */
     static CarrierConfigValuesLoader getCarrierConfigValuesLoader() {
         return sCarrierConfigValuesLoader;
-    }
-
-    /**
-     * Set APN settings loader
-     *
-     * @param loader the APN settings loader
-     */
-    static void setApnSettingsLoader(final ApnSettingsLoader loader) {
-        sApnSettingsLoader = loader;
-    }
-
-    /**
-     * Get the current APN settings loader
-     *
-     * @return the APN settings loader currently set
-     */
-    static ApnSettingsLoader getApnSettingsLoader() {
-        return sApnSettingsLoader;
     }
 
     /**

@@ -81,9 +81,6 @@ public abstract class UIIntents {
     // Conversation self id
     public static final String UI_INTENT_EXTRA_CONVERSATION_SELF_ID = "conversation_self_id";
 
-    // For opening an APN editor on a particular row in the apn database.
-    public static final String UI_INTENT_EXTRA_APN_ROW_ID = "apn_row_id";
-
     // Subscription id
     public static final String UI_INTENT_EXTRA_SUB_ID = "sub_id";
 
@@ -343,16 +340,6 @@ public abstract class UIIntents {
      */
     public abstract PendingIntent getPendingIntentForSecondaryUserNewMessageNotification(
             final Context context);
-
-    /**
-     * Get an intent for showing the APN editor.
-     */
-    public abstract Intent getApnEditorIntent(final Context context, final String rowId, int subId);
-
-    /**
-     * Get an intent for showing the APN settings.
-     */
-    public abstract Intent getApnSettingsIntent(final Context context, final int subId);
 
     /**
      * Get an intent for showing advanced settings.

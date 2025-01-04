@@ -44,7 +44,6 @@
     <bool name="group_mms_pref_default" translatable="false">true</bool>
     <string name="mms_phone_number_pref_key" translatable="false">buglesub_mms_phone_number</string>
     <string name="wireless_alerts_key" translatable="false">buglesub_wireless_alerts_key</string>
-    <string name="apn_list_pref_key" translatable="false">buglesub_apn_list</string>
 
     <!-- Debug preferences -->
     <string name="debug_pref_key" translatable="false">debug_category</string>

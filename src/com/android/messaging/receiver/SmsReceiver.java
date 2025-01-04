@@ -74,8 +74,7 @@ public final class SmsReceiver extends BroadcastReceiver {
         // When we're running as the secondary user, we don't get the new SMS_DELIVER intent,
         // only the primary user receives that. As secondary, we need to go old-school and
         // listen for the SMS_RECEIVED intent. For the secondary user, use this SmsReceiver
-        // for both sms and mms notification. For the primary user on KLP (and above), we don't
-        // use the SmsReceiver.
+        // for both sms and mms notification. For the primary user we don't use the SmsReceiver.
         boolean smsReceiverEnabled = OsUtil.isSecondaryUser();
 
         final PackageManager packageManager = context.getPackageManager();

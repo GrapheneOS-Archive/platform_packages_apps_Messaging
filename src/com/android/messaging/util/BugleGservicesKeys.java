@@ -146,24 +146,6 @@ public final class BugleGservicesKeys {
             "http://www.gstatic.com/android/sms/mms_ua_profile.xml";
 
     /**
-     * MMS apn mmsc
-     */
-    public static final String MMS_MMSC =
-            "bugle_mms_mmsc";
-
-    /**
-     * MMS apn proxy ip address
-     */
-    public static final String MMS_PROXY_ADDRESS =
-            "bugle_mms_proxy_address";
-
-    /**
-     * MMS apn proxy port
-     */
-    public static final String MMS_PROXY_PORT =
-            "bugle_mms_proxy_port";
-
-    /**
      * List of known SMS system messages that we will ignore (no deliver, no abort) so that the
      * user doesn't see them and the appropriate app is able to handle them. We are delivering
      * these as a \n delimited list of patterns, however we should eventually move to storing

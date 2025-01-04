@@ -411,18 +411,6 @@
                   android:theme="@style/Translucent"
                   android:configChanges="orientation|screenSize|keyboardHidden" />
 
-        <activity android:name=".ui.appsettings.ApnSettingsActivity"
-                  android:configChanges="orientation|screenSize|keyboardHidden"
-                  android:screenOrientation="user"
-                  android:theme="@style/BugleTheme"
-                  android:parentActivityName="com.android.messaging.ui.appsettings.SettingsActivity" />
-
-        <activity android:name=".ui.appsettings.ApnEditorActivity"
-                  android:configChanges="orientation|screenSize|keyboardHidden"
-                  android:screenOrientation="user"
-                  android:theme="@style/BugleTheme"
-                  android:parentActivityName="com.android.messaging.ui.appsettings.ApnSettingsActivity"/>
-
         <receiver android:name=".receiver.StorageStatusReceiver"
             android:exported="true">
             <intent-filter>
