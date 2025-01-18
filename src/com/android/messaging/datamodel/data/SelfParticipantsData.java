@@ -19,7 +19,6 @@ package com.android.messaging.datamodel.data;
 import android.database.Cursor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,21 +55,13 @@ public class SelfParticipantsData {
      * @param activeOnly if set, returns active self entries only (i.e. those with SIMs plugged in).
      */
     public List<ParticipantData> getSelfParticipants(final boolean activeOnly) {
-         List<ParticipantData> list = new ArrayList<ParticipantData>();
+        List<ParticipantData> list = new ArrayList<>();
         for (final ParticipantData self : mSelfParticipantMap.values()) {
             if (!activeOnly || self.isActiveSubscription()) {
                 list.add(self);
             }
         }
-        Collections.sort(
-                list,
-                new Comparator() {
-                    public int compare(Object o1, Object o2) {
-                        int slotId1 = ((ParticipantData) o1).getSlotId();
-                        int slotId2 = ((ParticipantData) o2).getSlotId();
-                        return slotId1 > slotId2 ? 1 : -1;
-                    }
-                });
+        list.sort(Comparator.comparingInt(ParticipantData::getSlotId));
         return list;
     }
 
