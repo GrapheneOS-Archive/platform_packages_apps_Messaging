@@ -33,7 +33,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.android.messaging.Factory;
@@ -265,26 +264,19 @@ public class ImageUtils {
      */
     public static int getOrientation(final InputStream inputStream) {
         int orientation = android.media.ExifInterface.ORIENTATION_UNDEFINED;
-        if (inputStream != null) {
-            try {
-                final ExifInterface exifInterface = new ExifInterface();
-                exifInterface.readExif(inputStream);
-                final Integer orientationValue =
-                        exifInterface.getTagIntValue(ExifInterface.TAG_ORIENTATION);
-                if (orientationValue != null) {
-                    orientation = orientationValue.intValue();
-                }
-            } catch (IOException e) {
-                // If the image if GIF, PNG, or missing exif header, just use the defaults
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                } catch (IOException e) {
-                    LogUtil.e(TAG, "getOrientation error closing input stream", e);
-                }
-            }
+        if (inputStream == null) {
+            return orientation;
+        }
+        final ExifInterface exifInterface = new ExifInterface();
+        try (inputStream) {
+            exifInterface.readExif(inputStream);
+        } catch (IOException e) {
+            LogUtil.e(TAG, "getOrientation", e);
+        }
+
+        Integer orientationValue = exifInterface.getTagIntValue(ExifInterface.TAG_ORIENTATION);
+        if (orientationValue != null) {
+            orientation = orientationValue.intValue();
         }
         return orientation;
     }
@@ -315,25 +307,17 @@ public class ImageUtils {
      * @return Whether the image stream represents a GIF
      */
     public static boolean isGif(InputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                byte[] gifHeaderBytes = new byte[6];
-                int value = inputStream.read(gifHeaderBytes, 0, 6);
-                if (value == 6) {
-                    return Arrays.equals(gifHeaderBytes, GIF87_HEADER)
-                            || Arrays.equals(gifHeaderBytes, GIF89_HEADER);
-                }
-            } catch (IOException e) {
-                return false;
-            } finally {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // Ignore
-                }
-            }
+        if (inputStream == null) {
+            return false;
         }
-        return false;
+        byte[] header;
+        try (inputStream) {
+            header = inputStream.readNBytes(6);
+        } catch (IOException e) {
+            LogUtil.e(LogUtil.BUGLE_TAG, "isGif", e);
+            return false;
+        }
+        return Arrays.equals(header, GIF87_HEADER) || Arrays.equals(header, GIF89_HEADER);
     }
 
     /**
