@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 
 import com.android.messaging.util.Assert;
-import com.android.messaging.util.LogUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 
@@ -55,14 +54,7 @@ public class GifImageResource extends ImageResource {
 
     @Override
     public Drawable getDrawable(Resources resources) {
-        try {
-            return mGifDrawable.getCurrent();
-        } catch (final Throwable t) {
-            // Malicious gif images can make the platform throw different kind of throwables, such
-            // as OutOfMemoryError and NullPointerException. Catch them all.
-            LogUtil.e(LogUtil.BUGLE_TAG, "Error getting drawable for GIF", t);
-            return null;
-        }
+        return mGifDrawable.getCurrent();
     }
 
     @Override
