@@ -99,7 +99,6 @@ dependencies {
 
     implementation(project(":lib:platform_frameworks_ex:common"))
     implementation(project(":lib:platform_frameworks_opt_chips"))
-    implementation(project(":lib:platform_frameworks_opt_colorpicker"))
     implementation(project(":lib:platform_frameworks_opt_photoviewer"))
     implementation(project(":lib:platform_frameworks_opt_vcard"))
 }

@@ -15,6 +15,5 @@ dependencyResolutionManagement {
 include(":app")
 include(":lib:platform_frameworks_ex:common")
 include(":lib:platform_frameworks_opt_chips")
-include(":lib:platform_frameworks_opt_colorpicker")
 include(":lib:platform_frameworks_opt_photoviewer")
 include(":lib:platform_frameworks_opt_vcard")

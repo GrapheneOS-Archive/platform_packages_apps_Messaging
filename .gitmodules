@@ -14,10 +14,6 @@
 	path = lib/platform_frameworks_opt_chips
 	url = https://github.com/GrapheneOS-Archive/platform_frameworks_opt_chips
 	branch = main
-[submodule "lib/platform_frameworks_opt_colorpicker"]
-	path = lib/platform_frameworks_opt_colorpicker
-	url = https://github.com/GrapheneOS-Archive/platform_frameworks_opt_colorpicker
-	branch = main
 [submodule "lib/platform_frameworks_opt_photoviewer"]
 	path = lib/platform_frameworks_opt_photoviewer
 	url = https://github.com/GrapheneOS-Archive/platform_frameworks_opt_photoviewer
