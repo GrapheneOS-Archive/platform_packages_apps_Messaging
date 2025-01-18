@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 public class GifImageResource extends ImageResource {
     private GifDrawable mGifDrawable;
 
-    public GifImageResource(String key, GifDrawable gifDrawable) {
+    private GifImageResource(String key, GifDrawable gifDrawable) {
         // GIF does not support exif tags
         super(key, ExifInterface.ORIENTATION_NORMAL);
         mGifDrawable = gifDrawable;
@@ -44,11 +44,11 @@ public class GifImageResource extends ImageResource {
         try (inputStream) {
             gifData = inputStream.readAllBytes();
         }
-        GifDrawable gifDrawable = null;
+        GifDrawable gifDrawable;
         try {
             gifDrawable = Glide.with(context).asGif().load(gifData).submit().get();
         } catch (ExecutionException | InterruptedException e) {
-            // Nothing to do if we fail getting the drawable
+            throw new IOException(e);
         }
         return new GifImageResource(key, gifDrawable);
     }
@@ -106,9 +106,7 @@ public class GifImageResource extends ImageResource {
     protected void close() {
         acquireLock();
         try {
-            if (mGifDrawable != null) {
-                mGifDrawable = null;
-            }
+            mGifDrawable = null;
         } finally {
             releaseLock();
         }
