@@ -113,12 +113,12 @@
     <dimen name="image_attachment_fallback_width">240dp</dimen>
     <dimen name="image_attachment_fallback_height">240dp</dimen>
 
-    <dimen name="fab_size">60dp</dimen>
-    <dimen name="fab_padding_bottom">4dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="fab_padding_bottom">0dp</dimen>
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fab_elevation_pressed">6dp</dimen>
-    <dimen name="fab_bottom_margin">12dp</dimen>
-    <dimen name="fab_left_right_margin">14dp</dimen>
+    <dimen name="fab_bottom_margin">16dp</dimen>
+    <dimen name="fab_left_right_margin">16dp</dimen>
     <dimen name="message_body_size_text_size">12sp</dimen>
 
     <dimen name="vcard_detail_group_indicator_width">40dp</dimen>

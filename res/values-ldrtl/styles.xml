@@ -22,7 +22,7 @@
     <style name="ComposeMessageViewAttachMediaButtonStyle">
         <item name="android:paddingStart">@dimen/compose_message_attachment_padding_sides</item>
         <item name="android:paddingEnd">@dimen/compose_message_attachment_padding_sides</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <style name="ConversationComposeSendText">

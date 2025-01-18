@@ -113,13 +113,13 @@
 
     <color name="contact_picker_hint_text_color">#40000000</color>
 
-    <color name="notification_sender_text">#9A9A9A</color>
-    <color name="notification_secondary_text">#FFFFFF</color>
-    <color name="notification_tertiary_text">#FFFFFF</color>
+    <color name="notification_sender_text">#DE000000</color>
+    <color name="notification_secondary_text">#8A000000</color>
+    <color name="notification_tertiary_text">#8A000000</color>
     <color name="wearable_notification_participants_count">#a2a2a2</color>
     <color name="notification_accent_color">@color/primary_color</color>
     <color name="notification_warning_color">#ff0000</color>
-    <color name="notification_subject_color">#99aaaaaa</color>
+    <color name="notification_subject_color">#DE000000</color>
 
     <color name="participant_list_text_primary">#4d4d4d</color>
     <color name="participant_list_text_secondary">#6d6d6d</color>
