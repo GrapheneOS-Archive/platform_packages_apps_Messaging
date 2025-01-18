@@ -6,10 +6,6 @@
 	path = lib/platform_external_libphonenumber
 	url = https://github.com/GrapheneOS/platform_external_libphonenumber
 	branch = main
-[submodule "lib/platform_frameworks_ex"]
-	path = lib/platform_frameworks_ex
-	url = https://github.com/GrapheneOS/platform_frameworks_ex
-	branch = main
 [submodule "lib/platform_frameworks_opt_chips"]
 	path = lib/platform_frameworks_opt_chips
 	url = https://github.com/GrapheneOS-Archive/platform_frameworks_opt_chips
