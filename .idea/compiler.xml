@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="Messaging.lib.platform_external_libphonenumber" target="21" />
-      <module name="Messaging.lib.platform_frameworks_ex.common" target="21" />
-      <module name="Messaging.lib.platform_frameworks_ex.framesequence" target="21" />
-      <module name="Messaging.lib.platform_frameworks_opt_chips" target="21" />
-      <module name="Messaging.lib.platform_frameworks_opt_colorpicker" target="21" />
-      <module name="Messaging.lib.platform_frameworks_opt_photoviewer" target="21" />
-      <module name="Messaging.lib.platform_frameworks_opt_vcard" target="21" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>
