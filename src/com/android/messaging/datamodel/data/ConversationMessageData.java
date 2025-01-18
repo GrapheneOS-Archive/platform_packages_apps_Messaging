@@ -33,12 +33,12 @@ import com.android.messaging.util.ContentType;
 import com.android.messaging.util.Dates;
 import com.android.messaging.util.LogUtil;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Class representing a message within a conversation sequence. The message parts
@@ -436,7 +436,7 @@ public class ConversationMessageData {
         final List<MessagePartData> attachmentParts = new LinkedList<>();
         for (final MessagePartData part : mParts) {
             if (part.isAttachment()) {
-                if (filter == null || filter.apply(part)) {
+                if (filter == null || filter.test(part)) {
                     attachmentParts.add(part);
                 }
             }

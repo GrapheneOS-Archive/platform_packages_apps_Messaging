@@ -21,7 +21,6 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import androidx.annotation.Nullable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -70,11 +69,13 @@ import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.UiUtils;
 import com.android.messaging.util.YouTubeUtil;
-import com.google.common.base.Predicate;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
+
+import androidx.annotation.Nullable;
 
 /**
  * The view for a single entry in a conversation.
@@ -1069,33 +1070,13 @@ public class ConversationMessageView extends FrameLayout implements View.OnClick
         }
     };
 
-    static final Predicate<MessagePartData> sVideoFilter = new Predicate<MessagePartData>() {
-        @Override
-        public boolean apply(final MessagePartData part) {
-            return part.isVideo();
-        }
-    };
+    static final Predicate<MessagePartData> sVideoFilter = MessagePartData::isVideo;
 
-    static final Predicate<MessagePartData> sAudioFilter = new Predicate<MessagePartData>() {
-        @Override
-        public boolean apply(final MessagePartData part) {
-            return part.isAudio();
-        }
-    };
+    static final Predicate<MessagePartData> sAudioFilter = MessagePartData::isAudio;
 
-    static final Predicate<MessagePartData> sVCardFilter = new Predicate<MessagePartData>() {
-        @Override
-        public boolean apply(final MessagePartData part) {
-            return part.isVCard();
-        }
-    };
+    static final Predicate<MessagePartData> sVCardFilter = MessagePartData::isVCard;
 
-    static final Predicate<MessagePartData> sImageFilter = new Predicate<MessagePartData>() {
-        @Override
-        public boolean apply(final MessagePartData part) {
-            return part.isImage();
-        }
-    };
+    static final Predicate<MessagePartData> sImageFilter = MessagePartData::isImage;
 
     interface AttachmentViewBinder {
         void bindView(View view, MessagePartData attachment);

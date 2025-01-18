@@ -22,14 +22,12 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.android.messaging.Factory;
 import com.android.messaging.datamodel.GalleryBoundCursorLoader;
 import com.android.messaging.datamodel.MediaScratchFileProvider;
 import com.android.messaging.util.Assert.DoesNotRunOnMainThread;
-import com.google.common.io.ByteStreams;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -41,6 +39,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import androidx.annotation.NonNull;
 
 public class UriUtil {
     private static final String SCHEME_SMS = "sms";
@@ -320,7 +320,7 @@ public class UriUtil {
         OutputStream outputStream = null;
         try {
             outputStream = context.getContentResolver().openOutputStream(targetUri);
-            ByteStreams.copy(inputStream, outputStream);
+            inputStream.transferTo(outputStream);
         } catch (final Exception ex) {
             LogUtil.e(LogUtil.BUGLE_TAG, "Error while copying content ", ex);
             return null;

@@ -41,7 +41,6 @@ import com.android.messaging.util.ContentType;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.MediaMetadataRetrieverWrapper;
 import com.android.messaging.util.PhoneUtils;
-import com.google.common.collect.Lists;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -321,7 +320,7 @@ public class DatabaseMessages {
         public int mResponseStatus;
         public int mRetrieveStatus;
 
-        public List<MmsPart> mParts = Lists.newArrayList();
+        public List<MmsPart> mParts = new ArrayList<>();
         private boolean mPartsProcessed = false;
 
         private MmsMessage() {

@@ -22,12 +22,12 @@ import android.provider.Telephony;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.PhoneUtils;
-import com.google.common.collect.Maps;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -46,7 +46,7 @@ class ApnsXmlProcessor {
 
     private static final String TAG = LogUtil.BUGLE_TAG;
 
-    private static final Map<String, String> APN_ATTRIBUTE_MAP = Maps.newHashMap();
+    private static final Map<String, String> APN_ATTRIBUTE_MAP = new HashMap<>();
     static {
         APN_ATTRIBUTE_MAP.put("mcc", Telephony.Carriers.MCC);
         APN_ATTRIBUTE_MAP.put("mnc", Telephony.Carriers.MNC);

@@ -25,8 +25,8 @@ import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.PhoneUtils;
 import com.android.messaging.util.SafeAsyncTask;
-import com.google.common.collect.Maps;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,7 @@ public class MmsConfig {
     public static final String KEY_TYPE_BOOL = "bool";
     public static final String KEY_TYPE_STRING = "string";
 
-    private static final Map<String, String> sKeyTypeMap = Maps.newHashMap();
+    private static final Map<String, String> sKeyTypeMap = new HashMap<>();
     static {
         sKeyTypeMap.put(CarrierConfigValuesLoader.CONFIG_ENABLED_MMS, KEY_TYPE_BOOL);
         sKeyTypeMap.put(CarrierConfigValuesLoader.CONFIG_ENABLED_TRANS_ID, KEY_TYPE_BOOL);
@@ -98,7 +98,7 @@ public class MmsConfig {
     // contain just one entry with the default self sub id; for LMSim and above, this will contain
     // all active sub ids but the default subscription id - the default subscription id will be
     // resolved to an active sub id during runtime.
-    private static final Map<Integer, MmsConfig> sSubIdToMmsConfigMap = Maps.newHashMap();
+    private static final Map<Integer, MmsConfig> sSubIdToMmsConfigMap = new HashMap<>();
     // The fallback values
     private static final MmsConfig sFallback =
             new MmsConfig(ParticipantData.DEFAULT_SELF_SUB_ID, new Bundle());

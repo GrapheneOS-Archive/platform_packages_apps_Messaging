@@ -21,7 +21,6 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.provider.Telephony;
-import androidx.collection.LongSparseArray;
 
 import com.android.messaging.datamodel.action.SyncMessagesAction;
 import com.android.messaging.datamodel.data.ParticipantData;
@@ -34,11 +33,12 @@ import com.android.messaging.util.BuglePrefsKeys;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.OsUtil;
 import com.android.messaging.util.PhoneUtils;
-import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import androidx.collection.LongSparseArray;
 
 /**
  * This class manages message sync with the Telephony SmsProvider/MmsProvider.
@@ -477,7 +477,7 @@ public class SyncManager {
 
                 // We want to try our best to load the messages,
                 // so if recipient info is broken, try to fix it with unknown recipient
-                recipients = Lists.newArrayList();
+                recipients = new ArrayList<>();
                 recipients.add(ParticipantData.getUnknownSenderDestination());
             }
 

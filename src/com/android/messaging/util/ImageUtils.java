@@ -33,6 +33,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.android.messaging.Factory;
@@ -42,7 +43,6 @@ import com.android.messaging.datamodel.media.ImageRequest;
 import com.android.messaging.util.Assert.DoesNotRunOnMainThread;
 import com.android.messaging.util.exif.ExifInterface;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,6 +50,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import androidx.annotation.Nullable;
@@ -493,10 +495,9 @@ public class ImageUtils {
                         GifTranscoder.transcode(mContext, inputFilePath, outputFilePath);
                 if (success) {
                     try {
-                        bytesToReturn = Files.toByteArray(outputFile);
+                        bytesToReturn = Files.readAllBytes(outputFile.toPath());
                     } catch (IOException e) {
-                        LogUtil.e(TAG, "Could not create FileInputStream with path of "
-                                + outputFilePath, e);
+                        LogUtil.e(TAG, "readAllBytes failed for " + outputFilePath, e);
                     }
                 }
 
@@ -506,10 +507,9 @@ public class ImageUtils {
                 // We don't want to transcode the gif because its image dimensions would be too
                 // small so just return the bytes of the original gif
                 try {
-                    bytesToReturn = Files.toByteArray(new File(inputFilePath));
+                    bytesToReturn = Files.readAllBytes(Path.of(inputFilePath));
                 } catch (IOException e) {
-                    LogUtil.e(TAG,
-                            "Could not create FileInputStream with path of " + inputFilePath, e);
+                    LogUtil.e(TAG, "readAllBytes failed for " + inputFilePath, e);
                 }
             }
 

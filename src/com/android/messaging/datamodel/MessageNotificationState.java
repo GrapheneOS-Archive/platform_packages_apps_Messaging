@@ -22,10 +22,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationCompat.WearableExtender;
-import androidx.core.app.NotificationManagerCompat;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -58,15 +54,21 @@ import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.NotificationChannelUtil;
 import com.android.messaging.util.PendingIntentConstants;
 import com.android.messaging.util.UriUtil;
-import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
+import androidx.core.app.NotificationCompat.WearableExtender;
+import androidx.core.app.NotificationManagerCompat;
 
 /**
  * Notification building class for conversation messages.
@@ -380,7 +382,7 @@ public abstract class MessageNotificationState extends NotificationState {
                 }
                 setPeopleForConversation(convInfo.mConversationId);
                 final ConversationInfoList list = new ConversationInfoList(
-                        convInfo.mTotalMessageCount, Lists.newArrayList(convInfo));
+                        convInfo.mTotalMessageCount, Collections.singletonList(convInfo));
                 mChildren.add(new BundledMessageNotificationState(list, i));
             }
         }
@@ -674,7 +676,7 @@ public abstract class MessageNotificationState extends NotificationState {
         // parts as separate messages on the wearable.
         final int limit = MAX_MESSAGES_IN_WEARABLE_PAGE + 1;
 
-        final List<CharSequence> messages = Lists.newArrayList();
+        final List<CharSequence> messages = new ArrayList<>();
         boolean hasSeenMessagesBeforeNotification = false;
         Cursor convMessageCursor = null;
         try {
@@ -976,7 +978,7 @@ public abstract class MessageNotificationState extends NotificationState {
             return null;
         } else {
             return new ConversationInfoList(messageCount,
-                    Lists.newLinkedList(convLineInfos.values()));
+                    new LinkedList<>(convLineInfos.values()));
         }
     }
 

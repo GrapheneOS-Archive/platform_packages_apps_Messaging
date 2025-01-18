@@ -21,14 +21,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
-import android.text.TextUtils;
 
 import com.android.messaging.Factory;
 import com.android.messaging.R;
-import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -110,7 +109,7 @@ public class FileUtil {
                 } else {
                     try {
                         final File fileTarget = new File(targetDir, file.getName());
-                        Files.move(file, fileTarget);
+                        Files.move(file.toPath(), fileTarget.toPath());
                     } catch (IOException e) {
                         LogUtil.e(LogUtil.BUGLE_TAG, "Failed to move files", e);
                         // Try proceed with the next file.
@@ -145,7 +144,7 @@ public class FileUtil {
             int fd = pfd.getFd();
             // Use the file descriptor to find out the read file path through symbolic link.
             Path fdPath = Paths.get("/proc/self/fd/" + fd);
-            Path filePath = java.nio.file.Files.readSymbolicLink(fdPath);
+            Path filePath = Files.readSymbolicLink(fdPath);
             pfd.close();
             return FileUtil.isSameOrSubDirectory(Environment.getDataDirectory(), filePath.toFile());
         } catch (Exception e) {

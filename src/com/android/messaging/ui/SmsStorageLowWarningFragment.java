@@ -39,8 +39,8 @@ import com.android.messaging.sms.SmsReleaseStorage;
 import com.android.messaging.sms.SmsReleaseStorage.Duration;
 import com.android.messaging.sms.SmsStorageStatusManager;
 import com.android.messaging.util.Assert;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -256,7 +256,7 @@ public class SmsStorageLowWarningFragment extends Fragment {
     private static List<String> loadFreeStorageActions(final Resources resources) {
         final Duration duration = SmsReleaseStorage.parseMessageRetainingDuration();
         final String durationString = SmsReleaseStorage.getMessageRetainingDurationString(duration);
-        final List<String> actions = Lists.newArrayList();
+        final List<String> actions = new ArrayList<>();
         actions.add(resources.getString(R.string.delete_all_media));
         actions.add(resources.getString(R.string.delete_oldest_messages, durationString));
 

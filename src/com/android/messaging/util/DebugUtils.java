@@ -39,7 +39,6 @@ import com.android.messaging.datamodel.action.LogTelephonyDatabaseAction;
 import com.android.messaging.sms.MmsUtils;
 import com.android.messaging.ui.UIIntents;
 import com.android.messaging.ui.debug.DebugSmsMmsFromDumpFileDialogFragment;
-import com.google.common.io.ByteStreams;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -351,7 +350,7 @@ public class DebugUtils {
                 final BufferedInputStream bis = new BufferedInputStream(fis);
                 try {
                     // dump file
-                    data = ByteStreams.toByteArray(bis);
+                    data = bis.readAllBytes();
                     if (data == null || data.length < 1) {
                         LogUtil.e(LogUtil.BUGLE_TAG, "receiveFromDumpFile: empty data");
                     }

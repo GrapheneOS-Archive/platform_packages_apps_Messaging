@@ -46,11 +46,11 @@ import com.android.messaging.sms.MmsSender;
 import com.android.messaging.sms.MmsUtils;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.LogUtil;
-import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -246,7 +246,7 @@ public class ProcessDownloadedMmsAction extends Action {
                 final File downloadedFile = MmsFileProvider.getFile(contentUri);
                 byte[] downloadedData = null;
                 try {
-                    downloadedData = Files.toByteArray(downloadedFile);
+                    downloadedData = Files.readAllBytes(downloadedFile.toPath());
                 } catch (final FileNotFoundException e) {
                     LogUtil.e(TAG, "ProcessDownloadedMmsAction: MMS download file not found: "
                             + downloadedFile.getAbsolutePath());
