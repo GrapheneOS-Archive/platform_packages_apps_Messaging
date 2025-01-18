@@ -21,12 +21,10 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import android.database.sqlite.SQLiteFullException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.android.common.contacts.DataUsageStatUpdater;
 import com.android.messaging.Factory;
 import com.android.messaging.R;
 import com.android.messaging.datamodel.BoundCursorLoader;
@@ -48,10 +46,8 @@ import com.android.messaging.sms.MmsSmsUtils;
 import com.android.messaging.sms.MmsUtils;
 import com.android.messaging.util.Assert;
 import com.android.messaging.util.Assert.RunsOnMainThread;
-import com.android.messaging.util.ContactUtil;
 import com.android.messaging.util.LogUtil;
 import com.android.messaging.util.PhoneUtils;
-import com.android.messaging.util.SafeAsyncTask;
 import com.android.messaging.widget.WidgetConversationProvider;
 
 import java.util.ArrayList;
@@ -609,41 +605,6 @@ public class ConversationData extends BindableData {
             } else {
                 InsertNewMessageAction.insertNewMessage(message);
             }
-        }
-        // Update contacts so Frequents will reflect messaging activity.
-        if (!getParticipantsLoaded()) {
-            return;  // oh well, not critical
-        }
-        final ArrayList<String> phones = new ArrayList<>();
-        final ArrayList<String> emails = new ArrayList<>();
-        for (final ParticipantData participant : mParticipantData) {
-            if (!participant.isSelf()) {
-                if (participant.isEmail()) {
-                    emails.add(participant.getSendDestination());
-                } else {
-                    phones.add(participant.getSendDestination());
-                }
-            }
-        }
-
-        if (ContactUtil.hasReadContactsPermission()) {
-            SafeAsyncTask.executeOnThreadPool(new Runnable() {
-                @Override
-                public void run() {
-                    final DataUsageStatUpdater updater = new DataUsageStatUpdater(
-                            Factory.get().getApplicationContext());
-                    try {
-                        if (!phones.isEmpty()) {
-                            updater.updateWithPhoneNumber(phones);
-                        }
-                        if (!emails.isEmpty()) {
-                            updater.updateWithAddress(emails);
-                        }
-                    } catch (final SQLiteFullException ex) {
-                        LogUtil.w(TAG, "Unable to update contact", ex);
-                    }
-                }
-            });
         }
     }
 
