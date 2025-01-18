@@ -39,12 +39,15 @@ public class GifImageResource extends ImageResource {
         mGifDrawable = gifDrawable;
     }
 
-    public static GifImageResource createGifImageResource(Context context, String key, InputStream inputStream) {
+    public static GifImageResource createGifImageResource(Context context, String key, InputStream inputStream) throws IOException {
+        byte[] gifData;
+        try (inputStream) {
+            gifData = inputStream.readAllBytes();
+        }
         GifDrawable gifDrawable = null;
         try {
-            byte[] gifData = inputStream.readAllBytes();
             gifDrawable = Glide.with(context).asGif().load(gifData).submit().get();
-        } catch (IOException | ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             // Nothing to do if we fail getting the drawable
         }
         return new GifImageResource(key, gifDrawable);
