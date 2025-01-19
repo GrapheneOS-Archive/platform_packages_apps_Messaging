@@ -17,6 +17,7 @@
 <resources>
     <style name="BugleBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:forceDarkAllowed">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="BugleTheme.ConversationActivity"
